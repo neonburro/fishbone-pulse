@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files (real keys never go in git)
+.env
+.env.*
+!.env.example
+
+# Local screenshots
+.screens/
+
+# Logs
+*.log
+yarn-error.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
