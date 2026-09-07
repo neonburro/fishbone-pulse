@@ -32,7 +32,7 @@ export async function getOrder(id) {
 
 function pushEvent(id, type, message) {
   state.events[id] = state.events[id] || []
-  state.events[id].unshift({ id: `ev-${Date.now()}`, order_id: id, actor_id: fx.previewUser.id, actor_label: 'Rae Fisher', type, message, meta: {}, created_at: new Date().toISOString() })
+  state.events[id].unshift({ id: `ev-${Date.now()}`, order_id: id, actor_id: fx.previewUser.id, actor_label: 'Tyler Reagan', type, message, meta: {}, created_at: new Date().toISOString() })
 }
 
 export async function updateOrderStatus(id, status, { previous } = {}) {

@@ -31,3 +31,25 @@ export async function signedArtworkUrl(path) {
 export function storagePathFromUrl() {
   return null
 }
+
+export async function readImageSize(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight })
+    img.onerror = () => resolve({ width: null, height: null })
+    img.src = url
+  })
+}
+export async function uploadShowcaseImage(file, placement = 'home') {
+  await wait(300)
+  const [{ width, height }, url] = await Promise.all([readImageSize(file), readAsDataUrl(file)])
+  return { path: `${placement}/${crypto.randomUUID()}.jpg`, url, width, height }
+}
+export async function removeShowcaseImage() {
+  await wait(30)
+}
+export async function uploadJournalCover(file) {
+  await wait(300)
+  return { path: `covers/${crypto.randomUUID()}.jpg`, url: await readAsDataUrl(file) }
+}

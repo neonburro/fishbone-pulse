@@ -1,6 +1,6 @@
 # Preview fixtures (development only)
 
-`VITE_PULSE_PREVIEW=1 yarn dev` (or `yarn dev:preview`) swaps `src/lib/api/*`, `src/store/authStore.js`
+`VITE_PULSE_PREVIEW=1 yarn dev` (or `yarn dev:preview`) swaps `src/lib/api/*`, `src/hooks/useAuth.jsx`
 and `src/utils/activityLogger.js` for the in-memory modules in this folder via a Vite `resolve.alias`
 that is only registered when the dev server (`vite serve`) is running with that flag.
 

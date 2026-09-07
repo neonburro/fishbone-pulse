@@ -31,10 +31,11 @@ import MotionFade from '../components/common/MotionFade'
 import { OrderStatusBadge, PaymentStatusBadge } from '../components/common/StatusBadge'
 import { getOrderStats, recentOrders } from '../lib/api/orders'
 import { countNewQuotes } from '../lib/api/quotes'
+import { countShowcase } from '../lib/api/showcase'
 import { getRecentActivity } from '../utils/activityLogger'
 import { formatMoney } from '../utils/money'
 import { formatDate, timeAgo, humanize } from '../utils/format'
-import { useAuthStore, displayNameOf } from '../store/authStore'
+import { useAuth } from '../hooks/useAuth'
 
 function StatTile({ label, value, hint, to, accent = 'ink.900', isLoading, isNew }) {
   return (
@@ -75,9 +76,10 @@ function StatTile({ label, value, hint, to, accent = 'ink.900', isLoading, isNew
 }
 
 export default function Dashboard() {
-  const { user, admin } = useAuthStore()
+  const { displayName } = useAuth()
   const [stats, setStats] = useState(null)
   const [newQuotes, setNewQuotes] = useState(null)
+  const [showcaseCount, setShowcaseCount] = useState(null)
   const [orders, setOrders] = useState(null)
   const [activity, setActivity] = useState(null)
   const [error, setError] = useState('')
@@ -85,7 +87,8 @@ export default function Dashboard() {
   const load = async () => {
     setError('')
     try {
-      const [s, q, o, a] = await Promise.all([getOrderStats(), countNewQuotes(), recentOrders(10), getRecentActivity(12)])
+      const [s, q, o, a, sc] = await Promise.all([getOrderStats(), countNewQuotes(), recentOrders(10), getRecentActivity(12), countShowcase().catch(() => 0)])
+      setShowcaseCount(sc)
       setStats(s)
       setNewQuotes(q)
       setOrders(o)
@@ -105,7 +108,7 @@ export default function Dashboard() {
   return (
     <MotionFade>
       <PageHeader
-        eyebrow={`${greeting}, ${displayNameOf(user, admin)}`}
+        eyebrow={`${greeting}, ${displayName}`}
         title="Dashboard"
         description="What is on the press today, what needs a decision, and what came in overnight."
         actions={
@@ -126,12 +129,13 @@ export default function Dashboard() {
         </Box>
       )}
 
-      <SimpleGrid columns={{ base: 2, md: 3, xl: 5 }} spacing={3} mb={6}>
+      <SimpleGrid columns={{ base: 2, md: 3, xl: 6 }} spacing={3} mb={6}>
         <StatTile label="Needs review" value={stats?.needsReview ?? 0} hint="New orders awaiting approval" to="/orders?status=pending_review" accent="ember.500" isLoading={!stats && !error} isNew={stats?.needsReview > 0} />
         <StatTile label="In production" value={stats?.inProduction ?? 0} hint="On press or being decorated" to="/orders?status=in_production" accent="blue.500" isLoading={!stats && !error} />
         <StatTile label="Ready for pickup" value={stats?.ready ?? 0} hint="Boxed and waiting at the counter" to="/orders?status=ready_for_pickup" accent="hivis.500" isLoading={!stats && !error} />
         <StatTile label="New quotes" value={newQuotes ?? 0} hint="Festival and custom requests" to="/quotes?status=new" accent="river.500" isLoading={newQuotes === null && !error} isNew={newQuotes > 0} />
         <StatTile label="Revenue MTD" value={formatMoney(stats?.revenueMTD ?? 0)} hint="Paid orders this month" accent="green.500" isLoading={!stats && !error} />
+        <StatTile label="Showcase items" value={showcaseCount ?? 0} hint="Live on the graphics wall" to="/showcase" accent="ink.900" isLoading={showcaseCount === null && !error} />
       </SimpleGrid>
 
       <Grid templateColumns={{ base: '1fr', xl: '2fr 1fr' }} gap={5}>

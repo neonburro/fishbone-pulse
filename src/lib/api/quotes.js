@@ -3,12 +3,13 @@ import { logActivity } from '../../utils/activityLogger'
 
 export { QUOTE_STATUSES } from '../enums'
 
-export async function listQuotes({ status, search, page = 1, pageSize = 25 } = {}) {
+export async function listQuotes({ status, requestType, search, page = 1, pageSize = 25 } = {}) {
   let query = supabase
     .from('quote_requests')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
   if (status && status !== 'all') query = query.eq('status', status)
+  if (requestType && requestType !== 'all') query = query.eq('request_type', requestType)
   const term = (search || '').trim()
   if (term) {
     const like = `%${term.replace(/[%_]/g, '\\$&')}%`
@@ -46,3 +47,13 @@ export async function countNewQuotes() {
   if (error) throw new Error(error.message)
   return count || 0
 }
+
+/** request_type values written by the storefront forms. */
+export const QUOTE_REQUEST_TYPES = [
+  { key: 'festival', label: 'Festival merch' },
+  { key: 'custom', label: 'Custom order' },
+  { key: 'business', label: 'Business / crew' },
+  { key: 'school', label: 'School / team' },
+  { key: 'contact', label: 'Contact form' },
+  { key: 'other', label: 'Other' },
+]

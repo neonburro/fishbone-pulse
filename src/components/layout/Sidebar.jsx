@@ -1,6 +1,6 @@
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
-import { FiGrid, FiClipboard, FiMessageSquare, FiUsers, FiTag, FiLayers, FiSettings } from 'react-icons/fi'
+import { FiGrid, FiClipboard, FiMessageSquare, FiUsers, FiTag, FiLayers, FiSettings, FiImage, FiFeather } from 'react-icons/fi'
 import Logo from '../brand/Logo'
 
 const NAV_ITEMS = [
@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { label: 'Customers', to: '/customers', icon: FiUsers },
   { label: 'Products', to: '/products', icon: FiTag },
   { label: 'Categories', to: '/categories', icon: FiLayers },
+  { label: 'Showcase', to: '/showcase', icon: FiImage },
+  { label: 'Notes', to: '/notes', icon: FiFeather },
   { label: 'Settings', to: '/settings', icon: FiSettings },
 ]
 

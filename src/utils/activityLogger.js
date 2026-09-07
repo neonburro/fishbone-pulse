@@ -1,5 +1,22 @@
 import { supabase } from '../lib/supabase'
 
+let actor = null
+
+/** Called by AuthProvider so log rows carry the profile display name. */
+export function setActivityActor(next) {
+  actor = next
+}
+
+function actorName(user) {
+  return (
+    actor?.profile?.display_name ||
+    actor?.admin?.display_name ||
+    user.user_metadata?.display_name ||
+    user.email ||
+    'Admin'
+  )
+}
+
 /**
  * Write a row to activity_log. Never throws — a failed log should not break the action.
  * @param {string} action     'created' | 'updated' | 'deleted' | 'status_changed' | ...
@@ -20,7 +37,7 @@ export async function logActivity(action, entityType, entityId, entityName, deta
     const { error } = await supabase.from('activity_log').insert({
       user_id: user.id,
       user_email: user.email,
-      user_name: user.user_metadata?.display_name || user.email?.split('@')[0] || 'Admin',
+      user_name: actorName(user),
       action,
       entity_type: entityType,
       entity_id: entityId ? String(entityId) : null,

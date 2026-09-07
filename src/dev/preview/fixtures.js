@@ -456,32 +456,102 @@ export const orderEvents = {
 }
 
 export const quotes = [
-  { id: 'q-1', name: 'Priya Natarajan', email: 'priya@ridgwayriverfest.example', phone: '(970) 555-0133', company: 'Ridgway RiverFest', event_name: 'RiverFest 2026', event_date: daysAhead(60), quantity_estimate: 400, product_interest: ['tees', 'hats', 'festival-merch'], description: 'Volunteer and vendor tees plus a small run of trucker caps for the merch booth. Art is mostly done, needs separations.', artwork_files: [{ path: 'uploads/aa11bb22/riverfest-logo.pdf', name: 'riverfest-logo.pdf', size: 402211, type: 'application/pdf' }], status: 'new', internal_notes: '', created_at: daysAgo(0, 7) },
-  { id: 'q-2', name: 'Cole Brannigan', email: 'cole@example.com', phone: null, company: 'Log Hill Trail Crew', event_name: null, event_date: null, quantity_estimate: 30, product_interest: ['hoodies-fleece'], description: 'Crew hoodies, left chest embroidery, maybe a back print. Small run.', artwork_files: [], status: 'contacted', internal_notes: 'Sent Gildan 18500 pricing. Waiting on colors.', created_at: daysAgo(3, 12) },
-  { id: 'q-3', name: 'Aimee Lund', email: 'aimee@mountainvillagemusic.example', phone: '(970) 555-0188', company: 'Mountain Village Music', event_name: 'Sunset Concert Series', event_date: daysAhead(35), quantity_estimate: 250, product_interest: ['tees', 'posters-prints'], description: 'Series tee and a limited 18x24 poster run.', artwork_files: [], status: 'quoted', internal_notes: 'Quoted $3,210 all-in.', created_at: daysAgo(9, 10) },
-  { id: 'q-4', name: 'Ben Okafor', email: 'ben@example.com', phone: null, company: null, event_name: 'Family reunion', event_date: daysAhead(20), quantity_estimate: 40, product_interest: ['tees'], description: 'Reunion tees, 1-color front.', artwork_files: [], status: 'won', internal_notes: 'Approved by phone; converting to an order.', created_at: daysAgo(15, 14) },
-  { id: 'q-5', name: 'Hollis Grant', email: 'hollis@example.com', phone: null, company: 'Grant Excavation', event_name: null, event_date: null, quantity_estimate: 12, product_interest: ['hats'], description: 'A dozen caps with our logo.', artwork_files: [], status: 'lost', internal_notes: 'Went with an online vendor.', created_at: daysAgo(40, 9) },
+  { id: 'q-1', name: 'Priya Natarajan', email: 'priya@ridgwayriverfest.example', phone: '(970) 555-0133', company: 'Ridgway RiverFest', event_name: 'RiverFest 2026', event_date: daysAhead(60), quantity_estimate: 400, product_interest: ['tees', 'hats', 'festival-merch'], description: 'Volunteer and vendor tees plus a small run of trucker caps for the merch booth. Art is mostly done, needs separations.', artwork_files: [{ path: 'uploads/aa11bb22/riverfest-logo.pdf', name: 'riverfest-logo.pdf', size: 402211, type: 'application/pdf' }], status: 'new', internal_notes: '', created_at: daysAgo(0, 7), request_type: 'festival', garment_interest: ['Comfort Colors 1717', 'Richardson 112'], decoration_interest: ['screen_print', 'embroidery'], colors_in_art: 3, print_locations: ['Front', 'Back'], sizes_estimate: 'Mostly M–XL, some youth', budget_range: '$3,000–$5,000', needed_by: daysAhead(45), delivery: 'ship', how_heard: 'Printed our 2024 tees', source_page: '/quote', reference_links: ['https://ridgwayriverfest.example/merch-2025'] },
+  { id: 'q-2', name: 'Cole Brannigan', email: 'cole@example.com', phone: null, company: 'Log Hill Trail Crew', event_name: null, event_date: null, quantity_estimate: 30, product_interest: ['hoodies-fleece'], description: 'Crew hoodies, left chest embroidery, maybe a back print. Small run.', artwork_files: [], status: 'contacted', internal_notes: 'Sent Gildan 18500 pricing. Waiting on colors.', created_at: daysAgo(3, 12), request_type: 'business', garment_interest: ['Gildan 18500'], decoration_interest: ['embroidery'], colors_in_art: 1, print_locations: ['Left chest'], sizes_estimate: '', budget_range: 'Under $1,000', needed_by: null, delivery: 'pickup', how_heard: 'Instagram', source_page: '/quote', reference_links: [] },
+  { id: 'q-3', name: 'Aimee Lund', email: 'aimee@mountainvillagemusic.example', phone: '(970) 555-0188', company: 'Mountain Village Music', event_name: 'Sunset Concert Series', event_date: daysAhead(35), quantity_estimate: 250, product_interest: ['tees', 'posters-prints'], description: 'Series tee and a limited 18x24 poster run.', artwork_files: [], status: 'quoted', internal_notes: 'Quoted $3,210 all-in.', created_at: daysAgo(9, 10), request_type: 'festival', source_page: '/quote' },
+  { id: 'q-4', name: 'Ben Okafor', email: 'ben@example.com', phone: null, company: null, event_name: 'Family reunion', event_date: daysAhead(20), quantity_estimate: 40, product_interest: ['tees'], description: 'Reunion tees, 1-color front.', artwork_files: [], status: 'won', internal_notes: 'Approved by phone; converting to an order.', created_at: daysAgo(15, 14), request_type: 'custom', source_page: '/quote' },
+  { id: 'q-5', name: 'Hollis Grant', email: 'hollis@example.com', phone: null, company: 'Grant Excavation', event_name: null, event_date: null, quantity_estimate: 12, product_interest: ['hats'], description: 'A dozen caps with our logo.', artwork_files: [], status: 'lost', internal_notes: 'Went with an online vendor.', created_at: daysAgo(40, 9), request_type: 'contact', source_page: '/contact' },
 ]
 
 export const settings = {
-  store: { name: 'Fishbone Graphics & Screen Printing', phone: '(970) 626-4437', email: 'orders@fishbonegraphics.example', address: '123 N Lena St\nRidgway, CO 81432', hours: 'Mon–Fri 9am–5pm · Sat by appointment', social: { instagram: 'fishbonegraphics', facebook: '' } },
-  ordering: { turnaround_days: 10, min_order_note: '12-piece minimum per design. Mixed sizes are fine.' },
-  tax: { rate: 0.039 },
-  shipping: { flat_rate: 18, enabled: true },
-  payments: { provider: 'invoice', note: 'We review every order and send an invoice within one business day. Nothing is charged until you approve the proof.' },
-  announcement: { enabled: true, text: 'Festival season: order by June 1 for Telluride Bluegrass delivery.' },
+  store: {
+    name: 'Fishbone Graphics & Screen Printing',
+    legal_name: 'Fishbone Graphics LLC',
+    tagline: 'Hand-pulled in Ridgway since 1985',
+    founded: 1985,
+    phone: '(970) 626-4437',
+    email: 'orders@fishbonegraphics.example',
+    admin_email: 'fishbonegraphics@neonburro.com',
+    address1: '123 N Lena St',
+    address2: '',
+    city: 'Ridgway',
+    state: 'CO',
+    zip: '81432',
+    map_url: 'https://maps.example/fishbone',
+    lat: 38.1525,
+    lng: -107.7615,
+    plus_code: '5624+XX Ridgway, Colorado',
+    directions_note: 'Corner of Lena and Clinton, across from the town park. Park on Lena.',
+    region: 'Uncompahgre Valley',
+    elevation_ft: 6985,
+    landmarks: [
+      { name: 'Ridgway Town Park', distance: '1 block' },
+      { name: 'True Grit Cafe', distance: '2 blocks' },
+    ],
+    hours: [
+      { days: 'Mon–Fri', open: '9:00 AM', close: '5:00 PM' },
+      { days: 'Sat', open: 'By appointment', close: '' },
+    ],
+    instagram: 'fishbonegraphics',
+    facebook: '',
+  },
+  ordering: { turnaround_days: 10, rush_available: true, min_order_note: '12-piece minimum per design. Mixed sizes are fine.' },
+  tax: { rate: 0.039, label: 'Sales tax', note: 'Tax-exempt organizations: send your certificate and we will remove tax from the invoice.' },
+  shipping: { flat_rate: 18, enabled: true, note: 'Large festival runs ship freight; we confirm the rate before invoicing.' },
+  payments: { provider: 'invoice', providers_available: ['invoice', 'stripe'], note: 'We review every order and send an invoice within one business day. Nothing is charged until you approve the proof.' },
+  announcement: { enabled: true, text: 'Festival season: order by June 1 for on-time delivery.' },
 }
 
 export const admins = [
-  { user_id: 'admin-1', email: 'rae@fishbonegraphics.example', display_name: 'Rae Fisher', role: 'owner' },
-  { user_id: 'admin-2', email: 'joel@fishbonegraphics.example', display_name: 'Joel Fisher', role: 'admin' },
+  { user_id: 'user-owner', email: 'tyler@neonburro.com', display_name: 'Tyler Reagan', role: 'owner' },
+  { user_id: 'user-rae', email: 'rae@fishbonegraphics.example', display_name: 'Rae Fisher', role: 'admin' },
+  { user_id: 'user-joel', email: 'joel@fishbonegraphics.example', display_name: 'Joel Fisher', role: 'staff' },
 ]
 
 export const previewUser = {
-  id: 'admin-1',
-  email: 'rae@fishbonegraphics.example',
-  user_metadata: { display_name: 'Rae Fisher' },
+  id: 'user-owner',
+  email: 'tyler@neonburro.com',
+  created_at: daysAgo(120),
+  last_sign_in_at: daysAgo(0, 7),
+  user_metadata: { display_name: 'Tyler Reagan', username: 'treagan' },
 }
+
+export const previewProfile = {
+  user_id: 'user-owner',
+  username: 'treagan',
+  display_name: 'Tyler Reagan',
+  email: 'tyler@neonburro.com',
+  avatar_url: null,
+  created_at: daysAgo(120),
+  updated_at: daysAgo(3),
+}
+
+export const teamMembers = [
+  { user_id: 'user-owner', email: 'tyler@neonburro.com', display_name: 'Tyler Reagan', role: 'owner', created_at: daysAgo(120), last_sign_in_at: daysAgo(0, 7), invited: false, profiles: { username: 'treagan', display_name: 'Tyler Reagan', avatar_url: null } },
+  { user_id: 'user-rae', email: 'rae@fishbonegraphics.example', display_name: 'Rae Fisher', role: 'admin', created_at: daysAgo(90), last_sign_in_at: daysAgo(1, 9), invited: false, profiles: { username: 'rae', display_name: 'Rae Fisher', avatar_url: null } },
+  { user_id: 'user-joel', email: 'joel@fishbonegraphics.example', display_name: 'Joel Fisher', role: 'staff', created_at: daysAgo(60), last_sign_in_at: daysAgo(4, 16), invited: false, profiles: { username: 'joel', display_name: 'Joel Fisher', avatar_url: null } },
+  { user_id: 'user-sam', email: 'sam@fishbonegraphics.example', display_name: 'Sam Ortega', role: 'staff', created_at: daysAgo(2), last_sign_in_at: null, invited: true, profiles: { username: null, display_name: 'Sam Ortega', avatar_url: null } },
+]
+
+export const accountRequests = [
+  { id: 'req-1', name: 'Mia Calloway', email: 'mia@example.com', requested_username: 'mia.c', message: 'I run the front counter Tue–Sat and need to look up orders for pickups.', status: 'new', created_at: daysAgo(1, 12) },
+  { id: 'req-2', name: 'Devon Pratt', email: 'devon@example.com', requested_username: 'devon', message: 'Summer press help. Joel said to request access.', status: 'new', created_at: daysAgo(3, 15) },
+]
+
+export const showcase = [
+  { id: 'sc-1', placement: 'home', title: 'Bluegrass 2025 tour tee', subtitle: null, client_name: 'Telluride Bluegrass Festival', year: 2025, image_path: 'home/a1.jpg', image_url: swatchImage('#2BB3A3', 'TBF 25'), alt: 'Seafoam tee with 3-color festival print', link_url: null, tags: ['festival', 'screen print'], accent_hex: '#2BB3A3', width: 1600, height: 1200, sort_order: 0, is_active: true, created_at: daysAgo(30) },
+  { id: 'sc-2', placement: 'home', title: 'Ice Park crew caps', subtitle: null, client_name: 'Ouray Ice Park', year: 2026, image_path: 'home/a2.jpg', image_url: swatchImage('#4F5A3C', 'OIP'), alt: 'Loden trucker caps with embroidered mark', link_url: null, tags: ['embroidery', 'hats'], accent_hex: '#C6F135', width: 1200, height: 1600, sort_order: 1, is_active: true, created_at: daysAgo(20) },
+  { id: 'sc-3', placement: 'home', title: 'RiverFest volunteer tees', subtitle: null, client_name: 'Ridgway RiverFest', year: 2025, image_path: 'home/a3.jpg', image_url: swatchImage('#FF6A13', 'RVR'), alt: 'Hi-vis orange volunteer tees stacked on the press', link_url: null, tags: ['festival'], accent_hex: '#FF6A13', width: 1600, height: 1067, sort_order: 2, is_active: true, created_at: daysAgo(18) },
+  { id: 'sc-4', placement: 'home', title: 'Sunset Series poster', subtitle: null, client_name: 'Mountain Village Music', year: 2025, image_path: 'home/a4.jpg', image_url: swatchImage('#8B1E2D', 'MVM'), alt: 'Hand-pulled 18x24 gig poster in crimson', link_url: null, tags: ['poster'], accent_hex: '#8B1E2D', width: 1200, height: 1800, sort_order: 3, is_active: false, created_at: daysAgo(15) },
+  { id: 'sc-5', placement: 'work', title: 'Demons volleyball', subtitle: null, client_name: 'Ridgway Secondary School', year: 2026, image_path: 'work/b1.jpg', image_url: swatchImage('#0B0B0C', 'RSS'), alt: 'Black tees with names and numbers', link_url: null, tags: ['school'], accent_hex: '#F2EDE4', width: 1600, height: 1200, sort_order: 0, is_active: true, created_at: daysAgo(12) },
+  { id: 'sc-6', placement: 'hero', title: 'The press room', subtitle: 'Hand-pulled since 1985', client_name: null, year: null, image_path: 'hero/c1.jpg', image_url: swatchImage('#141416', 'HERO'), alt: 'Six-color manual press under shop lights', link_url: '/about', tags: [], accent_hex: '#FF6A13', width: 2400, height: 1350, sort_order: 0, is_active: true, created_at: daysAgo(40) },
+]
+
+export const posts = [
+  { id: 'post-1', slug: 'festival-season-2026-deadlines', title: 'Festival season 2026: order deadlines', kicker: 'Plan ahead', excerpt: 'Bluegrass, RiverFest and the Sunset Series all land within six weeks. Here is when art needs to be in.', body: '## The short version\n\nGet art to us **four weeks** before your event.\n\n- Telluride Bluegrass: art by May 20\n- Ridgway RiverFest: art by June 1\n- Sunset Series: rolling, two weeks per run\n\nWe print in the order deposits land.', cover_image_path: 'covers/p1.jpg', cover_image_url: swatchImage('#FF6A13', 'DEADLINES'), cover_alt: 'Calendar taped to the press', tags: ['festival', 'deadlines'], author_id: 'user-rae', author_name: 'Rae Fisher', is_published: true, published_at: daysAgo(6), is_pinned: true, created_at: daysAgo(7), updated_at: daysAgo(6) },
+  { id: 'post-2', slug: 'why-we-print-water-based', title: 'Why we print water-based on festival tees', kicker: 'Shop notes', excerpt: 'Softer hand, better breathability at altitude, and it ages like a tour shirt should.', body: 'Water-based ink soaks into the fibers instead of sitting on top...', cover_image_path: null, cover_image_url: null, cover_alt: null, tags: ['process'], author_id: 'user-rae', author_name: 'Rae Fisher', is_published: true, published_at: daysAgo(25), is_pinned: false, created_at: daysAgo(26), updated_at: daysAgo(25) },
+  { id: 'post-3', slug: 'new-press-arrives', title: 'The new six-color press is here', kicker: 'Shop news', excerpt: 'Draft. Photos to come once it is bolted down.', body: 'More colors, tighter registration, same hands.', cover_image_path: null, cover_image_url: null, cover_alt: null, tags: ['shop'], author_id: 'user-owner', author_name: 'Tyler Reagan', is_published: false, published_at: null, is_pinned: false, created_at: daysAgo(2), updated_at: daysAgo(1) },
+]
 
 export const activity = [
   { id: 'act-1', user_id: 'admin-1', user_email: 'rae@fishbonegraphics.example', user_name: 'Rae Fisher', action: 'status_changed', entity_type: 'order', entity_id: 'ord-2', entity_name: 'FB-26-01006', details: {}, created_at: daysAgo(1, 17) },

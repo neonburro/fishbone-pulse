@@ -43,8 +43,9 @@ import MotionFade from '../components/common/MotionFade'
 import ArtworkList from '../components/orders/ArtworkList'
 import { QuoteStatusBadge } from '../components/common/StatusBadge'
 import { QUOTE_STATUS_META } from '../lib/statusMeta'
-import { listQuotes, QUOTE_STATUSES, updateQuoteNotes, updateQuoteStatus } from '../lib/api/quotes'
+import { listQuotes, QUOTE_REQUEST_TYPES, QUOTE_STATUSES, updateQuoteNotes, updateQuoteStatus } from '../lib/api/quotes'
 import { formatDate, formatDateTime, humanize } from '../utils/format'
+import Mono from '../components/common/Mono'
 
 const TABS = [{ key: 'all', label: 'All' }, ...QUOTE_STATUSES.map((s) => ({ key: s, label: QUOTE_STATUS_META[s].label }))]
 
@@ -61,9 +62,28 @@ function Field({ label, children }) {
   )
 }
 
+function TagField({ label, values }) {
+  const list = Array.isArray(values) ? values : []
+  if (!list.length) return null
+  return (
+    <Field label={label}>
+      <Wrap spacing={1} mt={1}>
+        {list.map((p) => (
+          <WrapItem key={p}>
+            <Tag size="sm" borderRadius="sm" bg="paper2">
+              {humanize(p)}
+            </Tag>
+          </WrapItem>
+        ))}
+      </Wrap>
+    </Field>
+  )
+}
+
 export default function Quotes() {
   const [params, setParams] = useSearchParams()
   const status = params.get('status') || 'all'
+  const requestType = params.get('type') || 'all'
   const page = parseInt(params.get('page') || '1', 10)
   const [search, setSearch] = useState('')
   const [result, setResult] = useState(null)
@@ -87,13 +107,13 @@ export default function Quotes() {
     setLoading(true)
     setError('')
     try {
-      setResult(await listQuotes({ status, search, page }))
+      setResult(await listQuotes({ status, requestType, search, page }))
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
     }
-  }, [status, search, page])
+  }, [status, requestType, search, page])
 
   useEffect(() => {
     const t = setTimeout(load, search ? 300 : 0)
@@ -156,6 +176,17 @@ export default function Quotes() {
         </TabList>
       </Tabs>
 
+      <HStack mb={4} spacing={1} flexWrap="wrap" rowGap={1}>
+        <Text fontFamily="heading" fontSize="xs" letterSpacing="0.1em" textTransform="uppercase" color="ink.500" fontWeight={600} mr={2}>
+          Type
+        </Text>
+        {[{ key: 'all', label: 'All' }, ...QUOTE_REQUEST_TYPES].map((t) => (
+          <Button key={t.key} size="xs" variant={requestType === t.key ? 'solid' : 'outline'} colorScheme={requestType === t.key ? 'ink' : undefined} onClick={() => setParam({ type: t.key, page: 1 })}>
+            {t.label}
+          </Button>
+        ))}
+      </HStack>
+
       <Card p={0}>
         {error ? (
           <Box p={4}>
@@ -171,6 +202,7 @@ export default function Quotes() {
               <Thead>
                 <Tr>
                   <Th>From</Th>
+                  <Th>Type</Th>
                   <Th>Event</Th>
                   <Th>Interest</Th>
                   <Th isNumeric>Qty est.</Th>
@@ -189,6 +221,11 @@ export default function Quotes() {
                         {q.company ? `${q.company} · ` : ''}
                         {q.email}
                       </Text>
+                    </Td>
+                    <Td>
+                      <Tag size="sm" borderRadius="sm" bg="paper2" fontSize="xs" whiteSpace="nowrap">
+                        {QUOTE_REQUEST_TYPES.find((t) => t.key === q.request_type)?.label || humanize(q.request_type) || 'Quote'}
+                      </Tag>
                     </Td>
                     <Td maxW="200px">
                       <Text noOfLines={1}>{q.event_name || '—'}</Text>
@@ -280,17 +317,33 @@ export default function Quotes() {
                   <Field label="Event date">{selected.event_date && formatDate(selected.event_date, 'EEE, MMM d, yyyy')}</Field>
                 </Grid>
 
-                <Field label="Interested in">
-                  <Wrap spacing={1} mt={1}>
-                    {(selected.product_interest || []).map((p) => (
-                      <WrapItem key={p}>
-                        <Tag size="sm" borderRadius="sm" bg="paper2">
-                          {humanize(p)}
-                        </Tag>
-                      </WrapItem>
-                    ))}
-                  </Wrap>
-                </Field>
+                <Grid templateColumns="1fr 1fr" gap={4}>
+                  <Field label="Request type">{QUOTE_REQUEST_TYPES.find((t) => t.key === selected.request_type)?.label || humanize(selected.request_type)}</Field>
+                  <Field label="Needed by">{selected.needed_by && formatDate(selected.needed_by, 'EEE, MMM d, yyyy')}</Field>
+                  <Field label="Delivery">{selected.delivery && humanize(selected.delivery)}</Field>
+                  <Field label="Budget">{selected.budget_range}</Field>
+                  <Field label="Colors in art">{selected.colors_in_art != null && <Mono>{selected.colors_in_art}</Mono>}</Field>
+                  <Field label="Sizes estimate">{selected.sizes_estimate}</Field>
+                  <Field label="How they heard">{selected.how_heard}</Field>
+                  <Field label="Source page">{selected.source_page && <Mono fontSize="xs">{selected.source_page}</Mono>}</Field>
+                </Grid>
+
+                <TagField label="Interested in" values={selected.product_interest} />
+                <TagField label="Garments" values={selected.garment_interest} />
+                <TagField label="Decoration" values={selected.decoration_interest} />
+                <TagField label="Print locations" values={selected.print_locations} />
+
+                {Array.isArray(selected.reference_links) && selected.reference_links.length > 0 && (
+                  <Field label="Reference links">
+                    <Stack spacing={0.5} mt={1}>
+                      {selected.reference_links.map((u) => (
+                        <Link key={u} href={u} target="_blank" rel="noreferrer" color="river.600" fontSize="sm" noOfLines={1}>
+                          {u}
+                        </Link>
+                      ))}
+                    </Stack>
+                  </Field>
+                )}
 
                 <Field label="Description">
                   <Text whiteSpace="pre-wrap">{selected.description}</Text>
@@ -311,6 +364,9 @@ export default function Quotes() {
                 </FormControl>
 
                 <HStack>
+                  {/* TODO(convert-to-order): "Convert to order" goes here. It should pre-fill place_order's payload
+                      from this request (contact, garment_interest -> items, needed_by, delivery -> fulfillment)
+                      and link the resulting order back via quote_requests.internal_notes or a future order_id column. */}
                   <Button as="a" href={`mailto:${selected.email}?subject=${encodeURIComponent(`Your Fishbone Graphics quote${selected.event_name ? ` — ${selected.event_name}` : ''}`)}`} size="sm" variant="outline">
                     Reply by email
                   </Button>

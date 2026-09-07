@@ -1,22 +1,16 @@
-import { useEffect } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { Center, Spinner, Text, VStack } from '@chakra-ui/react'
-import { useAuthStore } from '../../store/authStore'
+import { useAuth } from '../../hooks/useAuth'
 import NotAuthorized from '../../pages/NotAuthorized'
 
 /**
  * Requires an active session AND a row in admin_users for that user.
- * - no session   -> /login
+ * - no session   -> /login/ (remembers where they were headed)
  * - not an admin -> "Not authorized for Pulse" screen with sign-out
  */
 export default function ProtectedRoute({ children }) {
-  const status = useAuthStore((s) => s.status)
-  const init = useAuthStore((s) => s.init)
+  const { status } = useAuth()
   const location = useLocation()
-
-  useEffect(() => {
-    if (status === 'loading') init()
-  }, [status, init])
 
   if (status === 'loading') {
     return (
@@ -32,7 +26,7 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (status === 'signed_out') {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    return <Navigate to="/login/" replace state={{ from: `${location.pathname}${location.search}` }} />
   }
 
   if (status === 'not_admin') {

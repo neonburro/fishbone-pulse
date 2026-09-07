@@ -29,7 +29,7 @@ export default defineConfig(({ command, mode }) => {
       alias: preview
         ? [
             { find: /^(\.\.?\/)+lib\/api\/([a-zA-Z]+)$/, replacement: `${previewDir}/api/$2.js` },
-            { find: /^(\.\.?\/)+store\/authStore$/, replacement: `${previewDir}/authStore.js` },
+            { find: /^(\.\.?\/)+hooks\/useAuth$/, replacement: `${previewDir}/useAuth.jsx` },
             { find: /^(\.\.?\/)+utils\/activityLogger$/, replacement: `${previewDir}/activityLogger.js` },
           ]
         : [],

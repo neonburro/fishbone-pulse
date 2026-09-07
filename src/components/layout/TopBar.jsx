@@ -16,17 +16,16 @@ import {
 } from '@chakra-ui/react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { FiMenu, FiSearch, FiLogOut, FiSettings, FiExternalLink, FiChevronDown } from 'react-icons/fi'
-import { useAuthStore, displayNameOf } from '../../store/authStore'
+import { useAuth } from '../../hooks/useAuth'
 
 export default function TopBar({ onOpenMenu, onOpenSearch }) {
-  const { user, admin, signOut } = useAuthStore()
+  const { user, profile, role, displayName: name, signOut } = useAuth()
   const navigate = useNavigate()
   const isMobile = useBreakpointValue({ base: true, md: false })
-  const name = displayNameOf(user, admin)
 
   const handleSignOut = async () => {
     await signOut()
-    navigate('/login', { replace: true })
+    navigate('/login/', { replace: true })
   }
 
   return (
@@ -89,11 +88,12 @@ export default function TopBar({ onOpenMenu, onOpenSearch }) {
               {name}
             </Text>
             <Text fontSize="xs" color="ink.500" noOfLines={1}>
+              {profile?.username ? `@${profile.username} · ` : ''}
               {user?.email}
             </Text>
-            {admin?.role && (
+            {role && (
               <Text fontSize="xs" color="river.600" fontFamily="heading" textTransform="uppercase" letterSpacing="0.08em" mt={0.5}>
-                {admin.role}
+                {role}
               </Text>
             )}
           </Box>
