@@ -1,7 +1,7 @@
 import { supabase, unwrap } from '../supabase'
 import { logActivity } from '../../utils/activityLogger'
 
-export const PRICE_UNITS = ['each', 'per dozen', 'per set', 'per sq ft']
+export { PRICE_UNITS } from '../enums'
 
 const LIST_COLUMNS =
   'id, slug, name, brand, style_number, category_id, base_price, price_unit, min_quantity, images, is_active, is_featured, featured_order, updated_at, category:categories(id, name, key), product_variants(count)'

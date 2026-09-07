@@ -44,6 +44,7 @@ yarn dev        # http://localhost:3002
 yarn build      # production build to dist/
 yarn preview    # serve dist/ locally
 yarn lint       # eslint
+yarn dev:preview  # dev server with in-memory fixture data (layout review, no Supabase)
 ```
 
 Requires Node 20+ (`.nvmrc` provided).
@@ -75,6 +76,14 @@ To revoke access, delete the row from `admin_users`.
 `netlify.toml` is included: build `yarn build`, publish `dist`, Node 20, SPA redirect to `index.html`
 (`public/_redirects` covers the same for other static hosts). Set the two `VITE_*` environment variables in
 the Netlify site settings. Point a subdomain such as `pulse.fishbonegraphics.com` at the site.
+
+## Preview mode (fixtures)
+
+`yarn dev:preview` (or `VITE_PULSE_PREVIEW=1 yarn dev`) runs the dev server with `src/lib/api/*`,
+`src/store/authStore.js` and `src/utils/activityLogger.js` swapped for the in-memory fixtures in
+`src/dev/preview/` through a Vite alias. The alias is registered only for `vite serve`, every preview module
+throws unless `import.meta.env.DEV` is true, and the real API modules never fall back to fixtures — when
+Supabase is unreachable the UI shows error and empty states. See `src/dev/preview/README.md`.
 
 ## Notes for the next developer
 

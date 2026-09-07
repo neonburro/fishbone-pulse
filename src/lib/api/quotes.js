@@ -1,7 +1,7 @@
 import { supabase, unwrap } from '../supabase'
 import { logActivity } from '../../utils/activityLogger'
 
-export const QUOTE_STATUSES = ['new', 'contacted', 'quoted', 'won', 'lost']
+export { QUOTE_STATUSES } from '../enums'
 
 export async function listQuotes({ status, search, page = 1, pageSize = 25 } = {}) {
   let query = supabase

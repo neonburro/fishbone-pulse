@@ -177,7 +177,7 @@ export default function Orders() {
                         {o.needed_by ? formatDate(o.needed_by) : '—'}
                       </Td>
                       <Td whiteSpace="nowrap" color="ink.500">
-                        {formatDate(o.created_at, 'MMM d, h:mm a')}
+                        {formatDate(o.created_at, 'MMM d')}
                       </Td>
                     </Tr>
                   )

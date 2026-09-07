@@ -162,7 +162,7 @@ export default function Dashboard() {
                       <Th>Order</Th>
                       <Th>Customer</Th>
                       <Th>Status</Th>
-                      <Th>Payment</Th>
+                      <Th display={{ base: 'none', '2xl': 'table-cell' }}>Payment</Th>
                       <Th isNumeric>Total</Th>
                       <Th>Placed</Th>
                     </Tr>
@@ -184,7 +184,7 @@ export default function Dashboard() {
                         <Td>
                           <OrderStatusBadge status={o.status} />
                         </Td>
-                        <Td>
+                        <Td display={{ base: 'none', '2xl': 'table-cell' }}>
                           <PaymentStatusBadge status={o.payment_status} />
                         </Td>
                         <Td isNumeric>

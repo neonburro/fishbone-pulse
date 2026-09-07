@@ -1,23 +1,8 @@
 import { supabase, unwrap } from '../supabase'
 import { logActivity } from '../../utils/activityLogger'
+import { PAGE_SIZE } from '../enums'
 
-export const ORDER_STATUSES = [
-  'pending_review',
-  'quoted',
-  'awaiting_payment',
-  'paid',
-  'in_production',
-  'ready_for_pickup',
-  'shipped',
-  'completed',
-  'cancelled',
-]
-
-export const PAYMENT_STATUSES = ['unpaid', 'pending', 'paid', 'partially_refunded', 'refunded', 'failed']
-
-export const PAYMENT_PROVIDERS = ['invoice', 'stripe', 'square']
-
-export const PAGE_SIZE = 25
+export { ORDER_STATUSES, PAYMENT_STATUSES, PAYMENT_PROVIDERS, PAGE_SIZE } from '../enums'
 
 const LIST_COLUMNS =
   'id, order_number, status, payment_status, fulfillment, total, needed_by, created_at, contact, customer_id, order_items(count)'

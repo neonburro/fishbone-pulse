@@ -3,12 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Fishbone Pulse — admin dashboard for Fishbone Graphics & Screen Printing, Ridgway, Colorado",
+  "description": "Fishbone Pulse \u2014 admin dashboard for Fishbone Graphics & Screen Printing, Ridgway, Colorado",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "dev": "vite --port 3002",
+    "dev:preview": "VITE_PULSE_PREVIEW=1 vite --port 3002",
     "build": "vite build",
     "preview": "vite preview --port 3002",
     "lint": "eslint ."

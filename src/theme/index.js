@@ -268,6 +268,7 @@ const theme = extendTheme({
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             color: 'ink.500',
+            whiteSpace: 'nowrap',
             _selected: { color: 'ink.900', borderColor: 'ember.500' },
           },
           tablist: { borderColor: 'bone.300' },

@@ -65,10 +65,10 @@ function StatusStepper({ status, fulfillment }) {
         const done = idx >= i && !cancelled
         const current = idx === i && !cancelled
         return (
-          <HStack key={s} spacing={0} flex="1" minW="86px" align="flex-start">
+          <HStack key={s} spacing={0} flex="1" minW="92px" align="flex-start">
             <VStack spacing={1} flex="1" position="relative">
               <Box w="14px" h="14px" borderRadius="full" bg={done ? 'ember.500' : 'white'} border="2px solid" borderColor={done ? 'ember.500' : 'bone.300'} boxShadow={current ? '0 0 0 4px rgba(255,106,19,0.2)' : 'none'} zIndex={1} />
-              <Text fontSize="10px" fontFamily="heading" textTransform="uppercase" letterSpacing="0.06em" color={done ? 'ink.900' : 'ink.300'} textAlign="center" fontWeight={current ? 700 : 600} whiteSpace="nowrap">
+              <Text fontSize="10px" fontFamily="heading" textTransform="uppercase" letterSpacing="0.06em" color={done ? 'ink.900' : 'ink.300'} textAlign="center" fontWeight={current ? 700 : 600} whiteSpace="normal" lineHeight="1.15" px={1} maxW="90px">
                 {ORDER_STATUS_META[s]?.label || humanize(s)}
               </Text>
               {i < steps.length - 1 && <Box position="absolute" top="6px" left="50%" w="100%" h="2px" bg={idx > i && !cancelled ? 'ember.500' : 'bone.200'} />}

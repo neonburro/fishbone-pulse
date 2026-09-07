@@ -8,6 +8,8 @@ import { getOrderStats } from '../../lib/api/orders'
 import { countNewQuotes } from '../../lib/api/quotes'
 
 const SIDEBAR_W = '240px'
+// Dev-only: true when the Vite dev server runs with VITE_PULSE_PREVIEW=1 (fixture data, see src/dev/preview).
+const PREVIEW_MODE = import.meta.env.DEV && import.meta.env.VITE_PULSE_PREVIEW === '1'
 
 export default function Layout() {
   const menu = useDisclosure()
@@ -72,6 +74,11 @@ export default function Layout() {
       </Drawer>
 
       <Box flex="1" ml={{ base: 0, lg: SIDEBAR_W }} minW={0}>
+        {PREVIEW_MODE && (
+          <Box bg="hivis.400" color="ink.900" fontFamily="mono" fontSize="11px" textAlign="center" py={0.5} letterSpacing="0.04em">
+            PREVIEW MODE · fixture data · not connected to Supabase
+          </Box>
+        )}
         <TopBar onOpenMenu={menu.onOpen} onOpenSearch={search.onOpen} />
         <Box as="main" px={{ base: 4, md: 6, xl: 8 }} py={{ base: 5, md: 6 }} maxW="1440px" mx="auto">
           <Outlet />
@@ -79,6 +86,7 @@ export default function Layout() {
       </Box>
 
       <SearchModal isOpen={search.isOpen} onClose={search.onClose} />
+
     </Flex>
   )
 }

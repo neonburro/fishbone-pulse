@@ -540,7 +540,7 @@ export default function ProductForm() {
         </TabPanels>
       </Tabs>
 
-      <HStack mt={6} justify="flex-end" position="sticky" bottom={4} zIndex={5}>
+      <HStack mt={6} justify="flex-end" position={{ base: 'static', md: 'sticky' }} bottom={4} zIndex={5}>
         <Button size="md" leftIcon={<FiSave />} onClick={save} isLoading={saving} loadingText="Saving" boxShadow="lg">
           {isNew ? 'Create product' : 'Save changes'}
         </Button>
