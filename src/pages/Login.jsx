@@ -72,13 +72,13 @@ export default function Login() {
         flex={{ lg: '0 0 44%' }}
         bg="ink.900"
         color="bone.500"
-        p={{ base: 6, md: 10, lg: 14 }}
+        p={{ base: 5, md: 10, lg: 14 }}
         position="relative"
         overflow="hidden"
         display="flex"
         flexDirection="column"
         justifyContent="space-between"
-        minH={{ base: '200px', lg: 'auto' }}
+        minH={{ base: 'auto', lg: '100vh' }}
       >
         <Box
           position="absolute"
