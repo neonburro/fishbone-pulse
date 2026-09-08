@@ -6,21 +6,20 @@ import ErrorState from '../../components/common/ErrorState'
 import MotionFade from '../../components/common/MotionFade'
 import { getAllSettings } from '../../lib/api/settings'
 import StoreTab from './StoreTab'
-import { AnnouncementTab, OrderingTab, PaymentsTab, ShippingTab, TaxTab } from './ShopTabs'
+import { OrderingTab, PaymentsTab, ShippingTab, TaxTab } from './ShopTabs'
 import AccountTab from './AccountTab'
 import PricingTab from './PricingTab'
-import DesignTab from './DesignTab'
+import WebsiteTab from './WebsiteTab'
 import TeamTab from './TeamTab'
 
 const TABS = [
   { key: 'store', label: 'Store' },
   { key: 'ordering', label: 'Ordering' },
   { key: 'pricing', label: 'Pricing' },
-  { key: 'design', label: 'Design' },
+  { key: 'website', label: 'Website' },
   { key: 'tax', label: 'Tax' },
   { key: 'shipping', label: 'Shipping' },
   { key: 'payments', label: 'Payments' },
-  { key: 'announcement', label: 'Announcement' },
   { key: 'team', label: 'Team' },
   { key: 'account', label: 'Account' },
 ]
@@ -28,7 +27,9 @@ const STANDALONE = new Set(['team', 'account'])
 
 export default function Settings() {
   const [params, setParams] = useSearchParams()
-  const tabKey = params.get('tab') || 'store'
+  const raw = params.get('tab') || 'store'
+  // Older links said design or announcement. Both live under Website now.
+  const tabKey = raw === 'design' || raw === 'announcement' ? 'website' : raw
   const tabIndex = Math.max(0, TABS.findIndex((t) => t.key === tabKey))
   const [settings, setSettings] = useState(null)
   const [error, setError] = useState('')
@@ -84,7 +85,7 @@ export default function Settings() {
               <PricingTab settings={settings} onSaved={onSaved} />
             </TabPanel>
             <TabPanel p={0}>
-              <DesignTab settings={settings} onSaved={onSaved} />
+              <WebsiteTab settings={settings} onSaved={onSaved} />
             </TabPanel>
             <TabPanel p={0}>
               <TaxTab settings={settings} onSaved={onSaved} />
@@ -94,9 +95,6 @@ export default function Settings() {
             </TabPanel>
             <TabPanel p={0}>
               <PaymentsTab settings={settings} onSaved={onSaved} />
-            </TabPanel>
-            <TabPanel p={0}>
-              <AnnouncementTab settings={settings} onSaved={onSaved} />
             </TabPanel>
             <TabPanel p={0}>
               <TeamTab />

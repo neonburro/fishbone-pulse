@@ -154,35 +154,3 @@ export function PaymentsTab({ settings, onSaved }) {
   )
 }
 
-export function AnnouncementTab({ settings, onSaved }) {
-  const { draft, set, save, saving, dirty } = useSection(settings, 'announcement', 'Announcement', onSaved)
-  return (
-    <Card title="Announcement bar">
-      <Stack spacing={4}>
-        <FormControl display="flex" alignItems="center" justifyContent="space-between" maxW="420px">
-          <Box>
-            <FormLabel mb={0}>Show on storefront</FormLabel>
-            <Text fontSize="xs" color="ink.500">
-              A thin bar at the top of every page.
-            </Text>
-          </Box>
-          <Switch isChecked={Boolean(draft.enabled)} onChange={(e) => set({ enabled: e.target.checked })} />
-        </FormControl>
-        <FormControl>
-          <FormLabel>Text</FormLabel>
-          <Input value={draft.text || ''} onChange={(e) => set({ text: e.target.value })} placeholder="Festival season: order by June 1 for on-time delivery." maxLength={140} />
-          <FormHelperText color="ink.300">{(draft.text || '').length}/140</FormHelperText>
-        </FormControl>
-        {draft.enabled && draft.text && (
-          <Box bg="ink.900" color="bone.500" px={4} py={2} borderRadius="base" fontSize="sm" textAlign="center">
-            <Text as="span" color="hivis.400" fontFamily="heading" fontWeight={700} letterSpacing="0.1em" textTransform="uppercase" fontSize="xs" mr={2}>
-              Preview
-            </Text>
-            {draft.text}
-          </Box>
-        )}
-        <SaveBar onSave={save} saving={saving} dirty={dirty} />
-      </Stack>
-    </Card>
-  )
-}
