@@ -1,14 +1,16 @@
 // src/pages/Auth/AuthShell.jsx
 //
 // The public frame for sign in, request access, reset password and accept
-// invite. Ink on the left with the oval logo and one line, centered, paper
+// invite. Ink on the left with the oval logo (the only mark on the page, it
+// links out front) and one line, centered, paper
 // on the right with the form. On a phone the ink is a band across the top
 // with the oval in it, so the shop's mark is the first thing you see.
 // Simple and a little funny. Nothing on it that a crew member would find
 // odd at seven in the morning. The lines rotate by weekday, keep adding.
 
 import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react'
-import Logo, { OvalLogo } from '../../components/brand/Logo'
+import { OvalLogo } from '../../components/brand/Logo'
+import { STOREFRONT_URL } from '../../lib/constants'
 import MotionFade from '../../components/common/MotionFade'
 
 const LINES = [
@@ -33,9 +35,14 @@ export default function AuthShell({ eyebrow = 'Backstage', title, intro, childre
         minH={{ base: 'auto', lg: '100vh' }}
         gap={{ base: 6, lg: 10 }}
       >
-        <Box alignSelf={{ base: 'center', lg: 'flex-start' }}><Logo tone="dark" size={40} /></Box>
+        {/* One mark only. The oval is the door back out front. */}
+        <Text as="a" href={STOREFRONT_URL} fontFamily="mono" fontSize="11px" letterSpacing="0.3em" textTransform="uppercase" color="ember.500" alignSelf={{ base: 'center', lg: 'flex-start' }} _hover={{ color: 'ember.400' }}>
+          Backstage
+        </Text>
         <Stack spacing={{ base: 4, lg: 7 }} align="center" textAlign="center" alignSelf="center" w="100%">
-          <OvalLogo w={{ base: '150px', lg: 'min(360px, 70%)' }} />
+          <Box as="a" href={STOREFRONT_URL} aria-label="Fishbone Graphics, the storefront" display="block" w={{ base: '150px', lg: 'min(360px, 70%)' }} _hover={{ opacity: 0.85 }} transition="opacity 200ms">
+            <OvalLogo w="100%" />
+          </Box>
           <Heading size={{ base: 'md', lg: 'xl' }} color="bone.500" lineHeight={1} maxW="16ch" fontWeight={600}>
             {line}
           </Heading>
