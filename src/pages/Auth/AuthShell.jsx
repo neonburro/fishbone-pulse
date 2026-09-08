@@ -55,7 +55,8 @@ export default function AuthShell({ eyebrow = 'Backstage', title, intro, childre
       <Flex flex="1" align="center" justify="center" p={{ base: 6, md: 12 }}>
         <MotionFade style={{ width: '100%', maxWidth: 420 }}>
           <Box w="full">
-            <Text fontFamily="mono" fontSize="11px" letterSpacing="0.16em" textTransform="uppercase" color="ember.500">
+            {/* On a phone the ink band above already says Backstage once. */}
+            <Text fontFamily="mono" fontSize="11px" letterSpacing="0.16em" textTransform="uppercase" color="ember.500" display={{ base: eyebrow === 'Backstage' ? 'none' : 'block', lg: 'block' }}>
               {eyebrow}
             </Text>
             <Heading size="xl" mt={2} lineHeight="1">
