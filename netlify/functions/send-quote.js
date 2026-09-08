@@ -6,11 +6,12 @@
 // holds no database key. Same sheet as notify-admin: ink at the top, paper
 // below, type only.
 //
-// Env: RESEND_API_KEY, NOTIFY_FROM, REPLY_TO, SITE_URL, ADMIN_TO.
+// Env: RESEND_API_KEY, NOTIFY_FROM, REPLY_TO, SITE_URL, ADMIN_TO. See
+// docs/mail-and-dns.md for what is temporary and how to make it permanent.
 // No oxford commas, no em dashes.
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM = process.env.NOTIFY_FROM || 'Fishbone Graphics <fishbone@neonburro.com>'
+const FROM = process.env.NOTIFY_FROM || 'Fishbone Graphics <hello@fishbone.neonburro.com>'
 const REPLY_TO = process.env.REPLY_TO || 'sales@fishbonegraphics.com'
 const SITE = process.env.SITE_URL || 'https://fishbonegraphics.com'
 const ADMIN_TO = (process.env.ADMIN_TO || 'fishbonegraphics@neonburro.com').split(',').map((s) => s.trim()).filter(Boolean)

@@ -10,7 +10,8 @@
 // below, like the site, and it reads the same in every mail client because
 // it is tables and inline styles.
 //
-// Env on the Netlify site, never in git:
+// Env on the Netlify site, never in git. The full story, what is temporary
+// and how to make it permanent, is in docs/mail-and-dns.md.
 //   RESEND_API_KEY   send only key from the Resend account that has the
 //                    sending domain verified
 //   NOTIFY_FROM      'Fishbone Graphics <hello@yourverifieddomain>'
@@ -22,7 +23,7 @@
 // No oxford commas, no em dashes.
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
-const FROM = process.env.NOTIFY_FROM || 'Fishbone Graphics <fishbone@neonburro.com>'
+const FROM = process.env.NOTIFY_FROM || 'Fishbone Graphics <hello@fishbone.neonburro.com>'
 const ADMIN_TO = (process.env.ADMIN_TO || 'fishbonegraphics@neonburro.com').split(',').map((s) => s.trim()).filter(Boolean)
 const REPLY_TO = process.env.REPLY_TO || 'sales@fishbonegraphics.com'
 const PULSE = process.env.PULSE_URL || 'https://fishbonepulse.netlify.app'
