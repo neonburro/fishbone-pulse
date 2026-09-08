@@ -48,9 +48,9 @@ function ShowcaseTile({ item, index, total, onPatch, onMove, onDelete, dragging,
       outline={dragging ? '2px solid' : 'none'}
       outlineColor="ember.500"
       draggable
-      onDragStart={() => onDragStart(index)}
-      onDragOver={(e) => { e.preventDefault(); onDragOver(index) }}
-      onDrop={() => onDrop(index)}
+      onDragStart={() => onDragStart(item.id)}
+      onDragOver={(e) => { e.preventDefault(); onDragOver(item.id) }}
+      onDrop={() => onDrop(item.id)}
       cursor="grab"
     >
       <Box position="relative" bg="paper2" pt="100%">
@@ -282,7 +282,7 @@ export default function Showcase() {
                     setPendingDelete(it)
                     del.onOpen()
                   }}
-                  dragging={dragging}
+                  dragging={dragging === item.id}
                   onDragStart={setDragging}
                   onDragOver={setDropTarget}
                   onDrop={onDrop}
