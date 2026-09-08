@@ -60,6 +60,8 @@ export async function countNewQuotes() {
 
 /** request_type values written by the storefront forms. */
 export const QUOTE_REQUEST_TYPES = [
+  { key: 'quote', label: 'Run request' },
+  { key: 'design', label: 'Design' },
   { key: 'festival', label: 'Festival merch' },
   { key: 'custom', label: 'Custom order' },
   { key: 'business', label: 'Business / crew' },

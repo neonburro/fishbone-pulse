@@ -29,6 +29,11 @@ const KINDS = {
     subject: 'Your run request is in, Fishbone Graphics', customerTag: 'Received', customerHeading: (first) => `Got it, ${first}`,
     customerLede: 'A printer will look at the job and come back with a proof and a number, usually within a business day.',
   },
+  design: {
+    tag: 'Design request', shopHeading: (d) => `${d.name} has an idea`, shopLede: 'No art yet, they want the shop to draw it. A pencil before a squeegee.', path: '/quotes/', button: 'Open in Backstage',
+    subject: 'Your idea is in, Fishbone Graphics', customerTag: 'Received', customerHeading: (first) => `Got it, ${first}`,
+    customerLede: 'Someone who draws will read it and come back with questions or a first sketch, usually within a couple of days.',
+  },
   quote_accepted: {
     tag: 'Accepted', shopHeading: (d) => `${d.name} accepted the quote`, shopLede: 'The customer said yes. The run is waiting on payment.', path: '/orders/', button: 'Open the run',
     subject: 'You accepted the quote, Fishbone Graphics', customerTag: 'Accepted', customerHeading: (first) => `Thanks, ${first}`,

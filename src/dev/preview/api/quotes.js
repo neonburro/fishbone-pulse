@@ -3,6 +3,8 @@ import { wait, clone, matches, paginate } from './_util'
 
 export { QUOTE_STATUSES } from '../../../lib/enums'
 export const QUOTE_REQUEST_TYPES = [
+  { key: 'quote', label: 'Run request' },
+  { key: 'design', label: 'Design' },
   { key: 'festival', label: 'Festival merch' },
   { key: 'custom', label: 'Custom order' },
   { key: 'business', label: 'Business / crew' },
