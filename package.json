@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Fishbone Pulse — admin dashboard for Fishbone Graphics & Screen Printing, Ridgway, Colorado",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "dev": "vite --port 3002",
