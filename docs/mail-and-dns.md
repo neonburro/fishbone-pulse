@@ -18,6 +18,14 @@ Two Netlify functions send through Resend. Nothing else sends.
                 reminder (same function, reminder: true)
                 netlify/functions/notify-admin.js is a copy, keep in step
 
+Every email is printed on one sheet, netlify/functions/lib/mail.js, the
+same file in both repos. It is built like Backstage: ink card, the nav
+lockup top left, an orange label top right, panels for the details, a
+pill button. The lockup is a PNG the storefront serves at
+/email/lockup-ink.png (public/email/), rendered from the nav SVG because
+mail clients strip SVG. No dot separators anywhere in mail, commas and
+line breaks instead.
+
 Every send has a shop side and a customer side. The record is already in
 Supabase before any email goes out, so a mail failure never fails the form.
 Requests still show in Pulse with no key at all.
