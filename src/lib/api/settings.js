@@ -37,6 +37,7 @@ export const SETTINGS_DEFAULTS = {
   payments: { provider: 'invoice', providers_available: ['invoice'], note: '' },
   pricing: { show_prices: true, size_upcharges_enabled: false, size_upcharges: { '2XL': 0, '3XL': 0, '4XL': 0 } },
   announcement: { enabled: false, text: '' },
+  design: { accent: 'red', switcher: true },
 }
 
 export const SETTINGS_KEYS = Object.keys(SETTINGS_DEFAULTS)

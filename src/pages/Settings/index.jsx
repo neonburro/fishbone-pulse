@@ -9,12 +9,14 @@ import StoreTab from './StoreTab'
 import { AnnouncementTab, OrderingTab, PaymentsTab, ShippingTab, TaxTab } from './ShopTabs'
 import AccountTab from './AccountTab'
 import PricingTab from './PricingTab'
+import DesignTab from './DesignTab'
 import TeamTab from './TeamTab'
 
 const TABS = [
   { key: 'store', label: 'Store' },
   { key: 'ordering', label: 'Ordering' },
   { key: 'pricing', label: 'Pricing' },
+  { key: 'design', label: 'Design' },
   { key: 'tax', label: 'Tax' },
   { key: 'shipping', label: 'Shipping' },
   { key: 'payments', label: 'Payments' },
@@ -80,6 +82,9 @@ export default function Settings() {
             </TabPanel>
             <TabPanel p={0}>
               <PricingTab settings={settings} onSaved={onSaved} />
+            </TabPanel>
+            <TabPanel p={0}>
+              <DesignTab settings={settings} onSaved={onSaved} />
             </TabPanel>
             <TabPanel p={0}>
               <TaxTab settings={settings} onSaved={onSaved} />

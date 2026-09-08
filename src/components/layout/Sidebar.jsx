@@ -9,6 +9,7 @@ import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import { NavLink } from 'react-router-dom'
 import { FiGrid, FiClipboard, FiMessageSquare, FiUsers, FiTag, FiLayers, FiImage, FiFeather, FiBox, FiChevronRight, FiTrash2 } from 'react-icons/fi'
 import Logo from '../brand/Logo'
+import { STOREFRONT_URL } from '../../lib/constants'
 import MemberAvatar from '../crew/MemberAvatar'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -29,8 +30,11 @@ export default function Sidebar({ onNavigate, badges = {} }) {
   const me = { user_id: user?.id, name: displayName, avatar_url: profile?.avatar_url, online: true }
   return (
     <Flex direction="column" h="full" bg="ink.900" color="bone.300">
+      {/* The logo is the door back out front. Click it, see the site as a customer does. */}
       <Box px={5} py={5} borderBottom="1px solid" borderColor="ink.600">
-        <Logo tone="dark" size={34} />
+        <Box as="a" href={STOREFRONT_URL} target="_blank" rel="noopener" aria-label="Open the storefront" display="inline-block" borderRadius="md" _hover={{ opacity: 0.85 }} _focusVisible={{ boxShadow: 'outline', outline: 'none' }}>
+          <Logo tone="dark" size={34} />
+        </Box>
       </Box>
       <VStack as="nav" align="stretch" spacing={0.5} px={3} py={4} flex="1" aria-label="Main navigation">
         {NAV_ITEMS.map((item) => (

@@ -464,6 +464,7 @@ export const quotes = [
 ]
 
 export const settings = {
+  design: { accent: 'red', switcher: true },
   store: {
     name: 'Fishbone Graphics & Screen Printing',
     legal_name: 'Fishbone Graphics LLC',
