@@ -21,3 +21,6 @@ export async function listThread(userId, partnerId) { await wait(); return clone
 export async function sendMessage(userId, partnerId, content, orderId = null) { await wait(); const m = { id: `d${Date.now()}`, sender_id: userId, recipient_id: partnerId, content: String(content).trim(), order_id: orderId, read_at: null, created_at: now() }; dms.push(m); return clone(m) }
 export async function markThreadRead(userId, partnerId) { dms = dms.map((m) => (m.recipient_id === userId && m.sender_id === partnerId && !m.read_at ? { ...m, read_at: now() } : m)) }
 export async function countUnread(userId) { return dms.filter((m) => m.recipient_id === userId && !m.read_at).length }
+
+export function subscribeMessages() { return () => {} }
+export function subscribePresence() { return () => {} }

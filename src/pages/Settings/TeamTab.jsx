@@ -378,9 +378,6 @@ export default function TeamTab() {
         )}
       </Card>
 
-      <Text fontSize="xs" color="ink.300">
-        Bootstrapping the very first owner happens in SQL: <Code fontSize="xs">select grant_admin('owner@example.com');</Code>
-      </Text>
 
       <ConfirmDialog
         isOpen={removeDialog.isOpen}

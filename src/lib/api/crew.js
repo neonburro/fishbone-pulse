@@ -79,3 +79,23 @@ export async function countUnread(userId) {
   const { count } = await supabase.from('direct_messages').select('id', { count: 'exact', head: true }).eq('recipient_id', userId).is('read_at', null)
   return count || 0
 }
+
+
+// ── live ────────────────────────────────────────────────────────────────────
+// direct_messages and profiles are in the realtime publication, so a new
+// message or a heartbeat arrives as an event. Each returns an unsubscribe.
+export function subscribeMessages(userId, onChange) {
+  if (!userId) return () => {}
+  const ch = supabase.channel(`dm-${userId}`)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'direct_messages', filter: `recipient_id=eq.${userId}` }, (payload) => onChange?.(payload))
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'direct_messages', filter: `sender_id=eq.${userId}` }, (payload) => onChange?.(payload))
+    .subscribe()
+  return () => { supabase.removeChannel(ch) }
+}
+
+export function subscribePresence(onChange) {
+  const ch = supabase.channel('crew-presence')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, (payload) => onChange?.(payload))
+    .subscribe()
+  return () => { supabase.removeChannel(ch) }
+}

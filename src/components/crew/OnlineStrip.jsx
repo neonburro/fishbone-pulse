@@ -1,11 +1,12 @@
 // src/components/crew/OnlineStrip.jsx
 //
 // Who is backstage right now. Faces with green dots, in the top bar.
-// Tap a face to open a message to them. Refreshes every minute.
+// Tap a face to open a message to them. Updates on every heartbeat, with a
+// minute poll behind it in case the socket drops.
 
 import { useEffect, useState } from 'react'
 import { HStack, Text } from '@chakra-ui/react'
-import { listCrew } from '../../lib/api/crew'
+import { listCrew, subscribePresence } from '../../lib/api/crew'
 import MemberAvatar from './MemberAvatar'
 
 export default function OnlineStrip({ currentUserId, onPick }) {
@@ -14,8 +15,9 @@ export default function OnlineStrip({ currentUserId, onPick }) {
     let alive = true
     const load = () => listCrew().then((c) => alive && setCrew(c)).catch(() => {})
     load()
+    const off = subscribePresence(load)
     const t = setInterval(load, 60 * 1000)
-    return () => { alive = false; clearInterval(t) }
+    return () => { alive = false; off(); clearInterval(t) }
   }, [])
   const online = crew.filter((c) => c.online && c.user_id !== currentUserId)
   if (!online.length) return <Text fontFamily="mono" fontSize="11px" letterSpacing="0.14em" textTransform="uppercase" color="ink.300">Nobody else backstage</Text>

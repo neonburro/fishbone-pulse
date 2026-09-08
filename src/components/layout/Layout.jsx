@@ -7,7 +7,7 @@ import MessagesDrawer from '../crew/MessagesDrawer'
 import ErrorBoundary from '../common/ErrorBoundary'
 import usePresence from '../../hooks/usePresence'
 import { useAuth } from '../../hooks/useAuth'
-import { countUnread } from '../../lib/api/crew'
+import { countUnread, subscribeMessages } from '../../lib/api/crew'
 import { getOrderStats } from '../../lib/api/orders'
 import { countNewQuotes } from '../../lib/api/quotes'
 
@@ -44,14 +44,15 @@ export default function Layout() {
     }
   }, [location.pathname])
 
-  // unread messages, refreshed on route change and every minute
+  // unread messages: live on every message event, plus a slow poll as a net
   useEffect(() => {
     if (!user?.id) return undefined
     let alive = true
     const load = () => countUnread(user.id).then((n) => alive && setUnread(n)).catch(() => {})
     load()
-    const t = setInterval(load, 60 * 1000)
-    return () => { alive = false; clearInterval(t) }
+    const off = subscribeMessages(user.id, load)
+    const t = setInterval(load, 5 * 60 * 1000)
+    return () => { alive = false; off(); clearInterval(t) }
   }, [user?.id, location.pathname, messages.isOpen])
 
   const openMessages = (member) => { setPartner(member || null); messages.onOpen() }
