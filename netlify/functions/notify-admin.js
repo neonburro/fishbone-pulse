@@ -9,7 +9,7 @@
 // The sheet is lib/mail.js, shared with Pulse. Env is documented in
 // docs/mail-and-dns.md. No oxford commas, no em dashes.
 
-import { sheet, panel, send, esc, isEmail, stamp, label, BONE, MUTE, PHONE } from './lib/mail.js'
+import { sheet, panel, send, esc, isEmail, stamp, label, BONE, MUTE, DIM, PHONE } from './lib/mail.js'
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY
 const FROM = process.env.NOTIFY_FROM || 'Fishbone Graphics <hello@fishbone.neonburro.com>'
@@ -64,7 +64,10 @@ function details(d, { withPage = true } = {}) {
 
 function shopHtml(kind, d) {
   const k = KINDS[kind]
-  return sheet({ site: SITE, tag: k.tag, heading: k.shopHeading(d), lede: `${esc(k.shopLede)}<br><span style="color:${MUTE}">${stamp()}</span>`, body: details(d), cta: { href: PULSE + k.path, label: k.button } })
+  // A request id opens that exact request in Backstage, files and all.
+  const href = d.requestId && k.path === '/quotes/' ? `${PULSE}/quotes/?open=${d.requestId}` : PULSE + k.path
+  const filesNote = d.files.length ? `<div style="margin:-6px 0 16px">${label('The files are on the request in Backstage, tap the button', DIM)}</div>` : ''
+  return sheet({ site: SITE, tag: k.tag, heading: k.shopHeading(d), lede: `${esc(k.shopLede)}<br><span style="color:${MUTE}">${stamp()}</span>`, body: details(d) + filesNote, cta: { href, label: d.requestId ? 'Open this request' : k.button } })
 }
 
 function customerHtml(kind, d) {
@@ -92,6 +95,7 @@ export const handler = async (event) => {
     files: Array.isArray(body.files) ? body.files.slice(0, 20).map((f) => String(f).slice(0, 160)) : [],
     page: body.page ? String(body.page).slice(0, 200) : null,
     extra: body.extra && typeof body.extra === 'object' ? body.extra : null,
+    requestId: /^[0-9a-f-]{36}$/i.test(String(body.request_id || '')) ? String(body.request_id) : null,
   }
   if (!d.name || !isEmail(d.email)) return { statusCode: 400, body: JSON.stringify({ ok: false, reason: 'name and email' }) }
 
