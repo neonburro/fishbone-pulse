@@ -9,6 +9,7 @@ import {
   Input,
   Progress,
   SimpleGrid,
+  Stack,
   Skeleton,
   Switch,
   Tag,
@@ -16,10 +17,8 @@ import {
   Tooltip,
   useDisclosure,
   useToast,
-  Wrap,
-  WrapItem,
 } from '@chakra-ui/react'
-import { FiArrowLeft, FiArrowRight, FiExternalLink, FiTrash2, FiUpload } from 'react-icons/fi'
+import { FiArrowLeft, FiArrowRight, FiEye, FiEyeOff, FiTrash2, FiUpload } from 'react-icons/fi'
 import PageHeader from '../../components/common/PageHeader'
 import Card from '../../components/common/Card'
 import ConfirmDialog from '../../components/common/ConfirmDialog'
@@ -27,104 +26,60 @@ import EmptyState from '../../components/common/EmptyState'
 import ErrorState from '../../components/common/ErrorState'
 import MotionFade from '../../components/common/MotionFade'
 import Mono from '../../components/common/Mono'
-import TagsInput from '../../components/common/TagsInput'
 import { createShowcaseItem, deleteShowcaseItem, listShowcase, reorderShowcase, updateShowcaseItem } from '../../lib/api/showcase'
 import { uploadShowcaseImage } from '../../lib/api/storage'
 
-const ACCENTS = ['#FF6A13', '#2BB3A3', '#C6F135', '#F2EDE4', '#0B0B0C', '#8B1E2D', '#4F5A3C']
 
-/** One tile: image, live-editable caption fields, accent, reorder, active, delete. */
+/** One tile. The photo, one caption, a Home switch, delete. Drag to reorder. */
 function ShowcaseTile({ item, index, total, onPatch, onMove, onDelete, dragging, onDragStart, onDragOver, onDrop }) {
-  const [draft, setDraft] = useState(item)
-  useEffect(() => setDraft(item), [item])
-
-  const commit = (field) => {
-    if (draft[field] !== item[field]) onPatch(item.id, { [field]: draft[field] === '' ? null : draft[field] })
+  const [caption, setCaption] = useState(item.client_name || item.title || '')
+  useEffect(() => setCaption(item.client_name || item.title || ''), [item.client_name, item.title])
+  const commit = () => {
+    const next = caption.trim()
+    if (next !== (item.client_name || item.title || '')) onPatch(item.id, { client_name: next || null, alt: next || null })
   }
-  const field = (name, placeholder, props = {}) => (
-    <Input
-      size="xs"
-      variant="flushed"
-      value={draft[name] ?? ''}
-      placeholder={placeholder}
-      onChange={(e) => setDraft((d) => ({ ...d, [name]: e.target.value }))}
-      onBlur={() => commit(name)}
-      onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-      {...props}
-    />
-  )
-
   return (
     <Box
       bg="white"
-      borderRadius="base"
-      boxShadow="card"
+      borderRadius="lg"
       overflow="hidden"
-      opacity={item.is_active ? 1 : 0.6}
-      outline={dragging === item.id ? '2px solid #FF6A13' : 'none'}
+      boxShadow="card"
+      opacity={item.is_active ? 1 : 0.5}
+      outline={dragging ? '2px solid' : 'none'}
+      outlineColor="ember.500"
       draggable
-      onDragStart={() => onDragStart(item.id)}
-      onDragOver={(e) => {
-        e.preventDefault()
-        onDragOver(item.id)
-      }}
-      onDrop={(e) => {
-        e.preventDefault()
-        onDrop(item.id)
-      }}
+      onDragStart={() => onDragStart(index)}
+      onDragOver={(e) => { e.preventDefault(); onDragOver(index) }}
+      onDrop={() => onDrop(index)}
       cursor="grab"
     >
-      <Box position="relative" pt="72%" bg="paper2">
-        <Image src={item.image_url} alt={item.alt || ''} position="absolute" inset={0} w="full" h="full" objectFit="cover" draggable={false} />
-        <Box position="absolute" left={0} right={0} bottom={0} h="4px" bg={item.accent_hex || 'transparent'} />
-        <HStack position="absolute" top={2} left={2} spacing={1}>
-          <Tag size="sm" bg="rgba(11,11,12,0.7)" color="bone.500" fontFamily="mono" fontSize="10px">
-            #{index + 1}
-          </Tag>
-          {item.width && item.height && (
-            <Tag size="sm" bg="rgba(11,11,12,0.7)" color="bone.400" fontFamily="mono" fontSize="10px">
-              {item.width}×{item.height}
-            </Tag>
-          )}
-        </HStack>
-        <HStack position="absolute" top={2} right={2} spacing={0.5} bg="rgba(255,255,255,0.9)" borderRadius="sm" p={0.5}>
-          <IconButton size="xs" variant="ghost" aria-label="Move earlier" icon={<FiArrowLeft />} onClick={() => onMove(index, -1)} isDisabled={index === 0} />
-          <IconButton size="xs" variant="ghost" aria-label="Move later" icon={<FiArrowRight />} onClick={() => onMove(index, 1)} isDisabled={index === total - 1} />
+      <Box position="relative" bg="paper2" pt="100%">
+        {item.image_url ? (
+          <Image src={item.image_url} alt={item.alt || ''} position="absolute" inset={0} w="100%" h="100%" objectFit="cover" />
+        ) : (
+          <Text position="absolute" inset={0} display="grid" placeItems="center" fontFamily="mono" fontSize="11px" color="ink.400">No photo</Text>
+        )}
+        <Text position="absolute" top={2} left={2} fontFamily="mono" fontSize="10px" px={1.5} py={0.5} borderRadius="sm" bg="rgba(22,22,24,0.7)" color="bone.500">{index + 1}</Text>
+        <HStack position="absolute" top={2} right={2} spacing={0}>
+          <IconButton size="xs" variant="solid" bg="rgba(22,22,24,0.7)" color="bone.500" _hover={{ bg: 'ink.900' }} aria-label="Move earlier" icon={<FiArrowLeft />} onClick={() => onMove(index, -1)} isDisabled={index === 0} />
+          <IconButton size="xs" variant="solid" bg="rgba(22,22,24,0.7)" color="bone.500" _hover={{ bg: 'ink.900' }} aria-label="Move later" icon={<FiArrowRight />} onClick={() => onMove(index, 1)} isDisabled={index === total - 1} ml={1} />
         </HStack>
       </Box>
-      <Box p={3}>
-        <Grid templateColumns="1fr 64px" gap={2} mb={1}>
-          {field('client_name', 'Client name', { fontWeight: 600 })}
-          {field('year', 'Year', { fontFamily: 'mono', type: 'number', min: 1985, max: 2100 })}
-        </Grid>
-        {field('title', 'Title / piece')}
-        {field('alt', 'Alt text for screen readers', { color: 'ink.500' })}
-        <Box mt={2}>
-          <TagsInput value={item.tags || []} onChange={(tags) => onPatch(item.id, { tags })} placeholder="tags" />
-        </Box>
-        <HStack mt={3} justify="space-between" align="center">
-          <HStack spacing={1}>
-            {ACCENTS.map((hex) => (
-              <Tooltip key={hex} label={hex} fontSize="xs">
-                <Box as="button" type="button" aria-label={`Accent ${hex}`} w="16px" h="16px" borderRadius="full" bg={hex} border="2px solid" borderColor={item.accent_hex === hex ? 'ink.900' : 'white'} boxShadow="0 0 0 1px #D9D2C5" onClick={() => onPatch(item.id, { accent_hex: hex })} />
-              </Tooltip>
-            ))}
-            <Input type="color" size="xs" w="22px" h="18px" p={0} border="none" value={item.accent_hex || '#FF6A13'} onChange={(e) => onPatch(item.id, { accent_hex: e.target.value })} aria-label="Custom accent" />
+      <Stack spacing={2} p={3}>
+        <Input size="sm" variant="flushed" value={caption} placeholder="Who it was for" onChange={(e) => setCaption(e.target.value)} onBlur={commit} onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()} />
+        <HStack justify="space-between">
+          <HStack spacing={2}>
+            <Switch size="sm" colorScheme="orange" isChecked={item.placement === 'home'} onChange={(e) => onPatch(item.id, { placement: e.target.checked ? 'home' : 'work' })} aria-label="Show on the home page" />
+            <Text fontSize="xs" color="ink.500">{item.placement === 'home' ? 'Home page too' : 'Work page only'}</Text>
           </HStack>
-          <HStack spacing={1}>
-            <Tooltip label={item.placement === 'home' ? 'On the home page too' : 'Work page only'} fontSize="xs">
-              <HStack spacing={1}><Text fontFamily="mono" fontSize="10px" color="ink.500">Home</Text><Switch size="sm" colorScheme="orange" isChecked={item.placement === 'home'} onChange={(e) => onPatch(item.id, { placement: e.target.checked ? 'home' : 'work' })} aria-label="Show on the home page" /></HStack>
+          <HStack spacing={0}>
+            <Tooltip label={item.is_active ? 'Hide from the site' : 'Show on the site'} fontSize="xs">
+              <IconButton size="xs" variant="ghost" aria-label={item.is_active ? 'Hide' : 'Show'} icon={item.is_active ? <FiEye /> : <FiEyeOff />} onClick={() => onPatch(item.id, { is_active: !item.is_active })} />
             </Tooltip>
-            <Tooltip label={item.is_active ? 'Showing on the site' : 'Hidden'} fontSize="xs">
-              <Box>
-                <Switch size="sm" isChecked={item.is_active} onChange={(e) => onPatch(item.id, { is_active: e.target.checked })} aria-label="Toggle visible" />
-              </Box>
-            </Tooltip>
-            {item.image_url && <IconButton as="a" href={item.image_url} target="_blank" rel="noreferrer" size="xs" variant="ghost" aria-label="Open image" icon={<FiExternalLink />} />}
-            <IconButton size="xs" variant="ghost" colorScheme="red" aria-label="Delete item" icon={<FiTrash2 />} onClick={() => onDelete(item)} />
+            <IconButton size="xs" variant="ghost" color="ink.500" aria-label="Delete photo" icon={<FiTrash2 />} onClick={() => onDelete(item)} />
           </HStack>
         </HStack>
-      </Box>
+      </Stack>
     </Box>
   )
 }
@@ -250,7 +205,7 @@ export default function Showcase() {
 
   return (
     <MotionFade>
-      <PageHeader eyebrow="Storefront" title="The wall" description="One wall. Every photo shows on the Work page. Flip Home on the ones for the front page, they go first. Drop photos in, caption them, drag to reorder." />
+      <PageHeader eyebrow="Storefront" title="The wall" description="Drop photos in. They show on the Work page, and on the home page too if the switch is on. Drag to reorder, write who it was for, delete what is old." />
 
 
       {/* Dropzone */}
@@ -286,7 +241,7 @@ export default function Showcase() {
           <>
             <Text fontWeight={600}>Drop photos here to add them to the wall</Text>
             <Text fontSize="sm" color="ink.500" mt={1}>
-              New photos go on the home page and the work page. Multiple files become multiple tiles. We read the dimensions so the storefront can lay them out without jumping.
+              JPG, PNG or WebP, as many at once as you like. Each one becomes a tile.
             </Text>
             <Button mt={3} size="sm" leftIcon={<FiUpload />} onClick={() => inputRef.current?.click()}>
               Choose images
@@ -311,17 +266,8 @@ export default function Showcase() {
         <>
           <HStack mb={3} justify="space-between">
             <Text fontSize="xs" color="ink.500">
-              <Mono>{items.filter((i) => i.is_active).length}</Mono> live · <Mono>{items.length}</Mono> total · drag tiles or use the arrows to reorder
+              <Mono>{items.filter((i) => i.placement === 'home' && i.is_active).length}</Mono> on the home page, <Mono>{items.filter((i) => i.is_active).length}</Mono> on the work page. Drag a tile or use its arrows to reorder.
             </Text>
-            <Wrap spacing={1}>
-              {[...new Set(items.flatMap((i) => i.tags || []))].slice(0, 8).map((t) => (
-                <WrapItem key={t}>
-                  <Tag size="sm" bg="paper2" fontSize="xs">
-                    {t}
-                  </Tag>
-                </WrapItem>
-              ))}
-            </Wrap>
           </HStack>
           <SimpleGrid columns={{ base: 1, sm: 2, lg: 3, xl: 4 }} spacing={4}>
             {items.map((item, i) => (
