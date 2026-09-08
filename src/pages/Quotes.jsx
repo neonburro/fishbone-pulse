@@ -81,6 +81,15 @@ function TagField({ label, values }) {
   )
 }
 
+// sizes_estimate is free text from the old form or a {size: count} object
+// from the new one. Never hand React the object itself.
+function sizesText(v) {
+  if (!v) return ''
+  if (typeof v === 'string') return v
+  if (typeof v === 'object') return Object.entries(v).filter(([, n]) => Number(n) > 0).map(([s, n]) => `${s} ${n}`).join(', ')
+  return String(v)
+}
+
 export default function Quotes() {
   const [params, setParams] = useSearchParams()
   const status = params.get('status') || 'all'
@@ -348,7 +357,7 @@ export default function Quotes() {
                   <Field label="Delivery">{selected.delivery && humanize(selected.delivery)}</Field>
                   <Field label="Budget">{selected.budget_range}</Field>
                   <Field label="Colors in art">{selected.colors_in_art != null && <Mono>{selected.colors_in_art}</Mono>}</Field>
-                  <Field label="Sizes estimate">{selected.sizes_estimate}</Field>
+                  <Field label="Sizes estimate">{sizesText(selected.sizes_estimate)}</Field>
                   <Field label="How they heard">{selected.how_heard}</Field>
                   <Field label="Source page">{selected.source_page && <Mono fontSize="xs">{selected.source_page}</Mono>}</Field>
                 </Grid>
