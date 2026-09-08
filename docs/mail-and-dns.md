@@ -132,3 +132,19 @@ Whoever does the move, in this order, in one sitting.
 
 Keep the WordPress site up until the new site is on the domain. Cancel
 Scala Hosting, YooTheme Pro and the DJ plugins after, not before.
+
+## Login emails from Supabase
+
+Invites, password resets, magic links and email confirmations are sent by
+Supabase Auth, not by our functions. Set on 2026-09-08 in the Supabase
+dashboard, Authentication, Emails:
+
+- SMTP Settings: custom SMTP on, sender hello@fishbone.neonburro.com,
+  name Fishbone Graphics, host smtp.resend.com, port 465, user resend,
+  password is the Resend API key. Change the sender with the domain at
+  handoff, same as NOTIFY_FROM.
+- Templates: invite, confirm sign up, magic link, reset password and
+  change email are on the same sheet as lib/mail.js, with the mark from
+  /email/mark-ink.png and {{ .ConfirmationURL }} on the button. The
+  source for them is the sheet in lib/mail.js, if it changes, paste the
+  five again. Subjects end with ", Fishbone Backstage".
