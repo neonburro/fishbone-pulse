@@ -162,3 +162,16 @@ One events table, two audiences.
   a new item takes an opening count with initials into the ledger. A
   blank tied to a catalog product calls ensure_variant so that color
   appears on the storefront under that blank.
+
+- 2026-09-08, the long pass. Storefront: the hero is a place line, one
+  sentence on what and one on who, five doors (Start a run, Send your art,
+  Share your vision, See the work, Available prints). /design/ is the
+  design door and lands in Requests as request_type design with its own
+  mail. No badges, no minimums, no "24 and up". Runs shows the racks and
+  the three blanks the shop keeps (Comfort Colors 1717, Gildan 5000,
+  Gildan 18000), every other product is inactive until the shop turns it
+  on in Backstage. Price tables hide while every number is zero.
+  Toasts on the theme in both apps. Mail on the Backstage sheet, ink
+  frame, paper room, white cards. Supabase login mail on the same sheet
+  through Resend. Owner fishbonegraphics@neonburro.com, Tyler is admin.
+  Briefs for the shop in the storefront repo, docs/brief.
