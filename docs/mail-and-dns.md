@@ -75,7 +75,9 @@ The switch is small once DNS access exists.
    wants replies to look like they come from. REPLY_TO can then be the
    same address.
 3. Set SITE_URL and PULSE_URL to the real hostnames once the custom
-   domains are on Netlify.
+   domains are on Netlify. Also VITE_SITE_URL on the storefront, and the
+   absolute URLs in both index.html files (canonical, og:url, og:image),
+   which link previews read straight from the static file.
 4. Redeploy both sites. Send one contact form and one quote as a test to
    fishbonegraphics@neonburro.com and confirm both emails on each.
 5. Remove fishbone.neonburro.com from Resend and its records from
