@@ -115,7 +115,7 @@ export default function Products() {
     <MotionFade>
       <PageHeader
         eyebrow="Catalog"
-        title="Products"
+        title="Blanks"
         description="Everything customers can order on the storefront. Hidden products stay in the catalog but are not shown."
         actions={
           <Button as={RouterLink} to="/products/new" leftIcon={<FiPlus />} size="sm">

@@ -10,8 +10,8 @@ body,
 
 body {
   margin: 0;
-  background: #faf7f2;
-  color: #0b0b0c;
+  background: #F6F2EA;
+  color: #161618;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -28,14 +28,14 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1ece3;
+  background: #ECE6DA;
 }
 ::-webkit-scrollbar-thumb {
-  background: #b8b0a2;
+  background: #B9B2A4;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4a4741;
+  background: #4F4F54;
 }
 
 /* Job ticket print view */

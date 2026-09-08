@@ -1,71 +1,55 @@
-import { Box, Flex, Heading, HStack, Text } from '@chakra-ui/react'
-import Logo from '../../components/brand/Logo'
-import RegMark from '../../components/common/RegMark'
-import PulledRule from '../../components/common/PulledRule'
+// src/pages/Auth/AuthShell.jsx
+//
+// The public frame for sign in, request access, reset password and accept
+// invite. Ink on the left with the oval logo and one line, paper on the
+// right with the form. Simple and a little funny. Nothing on it that a
+// crew member would find odd at seven in the morning.
+
+import { Box, Flex, Heading, Stack, Text } from '@chakra-ui/react'
+import Logo, { OvalLogo } from '../../components/brand/Logo'
 import MotionFade from '../../components/common/MotionFade'
 
-/**
- * Two-panel public layout: ink brand panel + paper form panel.
- * Used by Login, Request account, Reset password and Accept invite.
- */
-export default function AuthShell({ eyebrow = 'Fishbone Pulse', title, intro, children, footer, headline = 'Every job, from art approval to pickup.' }) {
+const LINES = [
+  'Ink is forever. Passwords are not.',
+  'Wash your hands before you touch the keyboard.',
+  'Every job, from the first call to the last box.',
+  'The squeegee does not care how you slept.',
+  'Registration holds. So does the coffee.',
+]
+
+export default function AuthShell({ eyebrow = 'Backstage', title, intro, children, footer, headline }) {
+  const line = headline || LINES[new Date().getDay() % LINES.length]
   return (
-    <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }}>
-      <Box
-        flex={{ lg: '0 0 44%' }}
+    <Flex minH="100vh" direction={{ base: 'column', lg: 'row' }} bg="paper">
+      <Flex
+        flex={{ lg: '0 0 42%' }}
         bg="ink.900"
         color="bone.500"
-        p={{ base: 5, md: 10, lg: 14 }}
-        position="relative"
-        overflow="hidden"
-        display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
+        p={{ base: 5, md: 8, lg: 12 }}
+        direction="column"
+        justify="space-between"
         minH={{ base: 'auto', lg: '100vh' }}
+        gap={10}
       >
-        <Box
-          position="absolute"
-          inset={0}
-          opacity={0.25}
-          pointerEvents="none"
-          bgImage="radial-gradient(circle, rgba(242,237,228,0.5) 1px, transparent 1.5px)"
-          bgSize="7px 7px"
-          sx={{
-            maskImage: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent 55%)',
-            WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent 55%)',
-          }}
-        />
-        <Logo tone="dark" size={44} position="relative" />
-        <Box position="relative" display={{ base: 'none', lg: 'block' }}>
-          <HStack spacing={2} color="ember.500" mb={3}>
-            <RegMark size={14} />
-            <Text fontFamily="heading" fontSize="xs" letterSpacing="0.12em" textTransform="uppercase" fontWeight={600}>
-              Shop control room
-            </Text>
-          </HStack>
-          <Heading size="2xl" color="bone.500" lineHeight="0.95" maxW="12ch">
-            {headline}
+        <Logo tone="dark" size={40} />
+        <Stack spacing={7} display={{ base: 'none', lg: 'flex' }} align="flex-start">
+          <OvalLogo w="min(360px, 70%)" />
+          <Heading size="xl" color="bone.500" lineHeight={1} maxW="16ch" fontWeight={600}>
+            {line}
           </Heading>
-          <PulledRule mt={5} w="88px" />
-          <Text mt={5} color="bone.300" maxW="42ch" fontSize="sm">
-            Orders, quotes, customers, catalog and shop settings for Fishbone Graphics &amp; Screen Printing. Hand-pulled in
-            Ridgway, Colorado since 1985.
-          </Text>
-        </Box>
-        <HStack position="relative" spacing={4} color="bone.400" fontSize="xs" fontFamily="mono" display={{ base: 'none', lg: 'flex' }}>
-          <Text>(970) 626-4437</Text>
-          <Text>·</Text>
-          <Text>@fishbonegraphics</Text>
-        </HStack>
-      </Box>
+        </Stack>
+        <Text fontFamily="mono" fontSize="11px" letterSpacing="0.16em" textTransform="uppercase" color="bone.400" display={{ base: 'none', lg: 'block' }}>
+          Est 1985 · Ridgway, CO · (970) 626-4350
+        </Text>
+      </Flex>
 
-      <Flex flex="1" align="center" justify="center" p={{ base: 6, md: 12 }} bg="paper">
+      <Flex flex="1" align="center" justify="center" p={{ base: 6, md: 12 }}>
         <MotionFade style={{ width: '100%', maxWidth: 420 }}>
           <Box w="full">
-            <Text fontFamily="heading" fontSize="xs" letterSpacing="0.12em" textTransform="uppercase" color="ink.500" fontWeight={600}>
+            <Text fontFamily="mono" fontSize="11px" letterSpacing="0.16em" textTransform="uppercase" color="ember.500">
               {eyebrow}
             </Text>
-            <Heading size="xl" mt={1} lineHeight="1">
+            <Heading size="xl" mt={2} lineHeight="1">
               {title}
             </Heading>
             {intro && (
@@ -75,7 +59,7 @@ export default function AuthShell({ eyebrow = 'Fishbone Pulse', title, intro, ch
             )}
             <Box mt={8}>{children}</Box>
             {footer && (
-              <Box mt={8} fontSize="xs" color="ink.300">
+              <Box mt={8} fontSize="xs" color="ink.400">
                 {footer}
               </Box>
             )}

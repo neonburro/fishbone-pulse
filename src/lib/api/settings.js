@@ -11,7 +11,7 @@ export const SETTINGS_DEFAULTS = {
     legal_name: '',
     tagline: '',
     founded: 1985,
-    phone: '(970) 626-4437',
+    phone: '(970) 626-4350',
     email: '',
     admin_email: 'fishbonegraphics@neonburro.com',
     address1: '',
@@ -35,6 +35,7 @@ export const SETTINGS_DEFAULTS = {
   tax: { rate: 0, label: 'Sales tax', note: '' },
   shipping: { flat_rate: 0, enabled: false, note: '' },
   payments: { provider: 'invoice', providers_available: ['invoice'], note: '' },
+  pricing: { show_prices: true, size_upcharges_enabled: false, size_upcharges: { '2XL': 0, '3XL': 0, '4XL': 0 } },
   announcement: { enabled: false, text: '' },
 }
 

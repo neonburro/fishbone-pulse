@@ -80,3 +80,21 @@ export async function recentOrders(limit = 10) {
   await wait()
   return clone(state.orders.slice(0, limit))
 }
+
+
+export async function sendQuote(order) {
+  await wait()
+  return { token: 'preview-token', mailed: false, order_number: order.order_number }
+}
+
+
+export async function createRun({ contact }) { await wait(); return { order_id: 'ord-1', order_number: 'FB-2609-004', contact } }
+export async function saveItem(orderId, item) { await wait(); return { item: { ...item, id: item.id || `it-${Date.now()}`, line_total: Number(item.unit_price || 0) * Number(item.quantity || 0) }, totals: {} } }
+export async function removeItem() { await wait(); return {} }
+export async function recalcTotals() { await wait(); return {} }
+export async function updateOrderMoney() { await wait(); return {} }
+export async function trashOrder(id, initials) { await wait(); if (String(initials || '').length < 2) throw new Error('Your initials, two letters at least.'); return true }
+export async function restoreOrder() { await wait(); return true }
+export async function purgeOrders(ids) { await wait(); return ids.length }
+export async function listTrashedOrders() { await wait(); return [{ id: 'ord-x', order_number: 'FB-2608-011', contact: { name: 'Old Test' }, total: 120, status: 'cancelled', deleted_at: new Date().toISOString(), deleted_by: 'JR', created_at: new Date().toISOString() }] }
+export async function sendReminder() { await wait(); return { mailed: false } }

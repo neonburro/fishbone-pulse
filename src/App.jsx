@@ -18,6 +18,9 @@ import Showcase from './pages/Showcase'
 import Notes from './pages/Notes'
 import NoteEditor from './pages/Notes/NoteEditor'
 import Settings from './pages/Settings'
+import Stock from './pages/Stock'
+import StockItem from './pages/Stock/ItemDetail'
+import Trash from './pages/Trash'
 import NotFound from './pages/NotFound'
 
 export default function App() {
@@ -60,6 +63,9 @@ export default function App() {
         <Route path="/notes" element={<Notes />} />
         <Route path="/notes/new" element={<NoteEditor />} />
         <Route path="/notes/:id" element={<NoteEditor />} />
+        <Route path="/stock" element={<Stock />} />
+        <Route path="/stock/:id" element={<StockItem />} />
+        <Route path="/trash" element={<Trash />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Route>

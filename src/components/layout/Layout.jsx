@@ -3,7 +3,11 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Box, Drawer, DrawerContent, DrawerOverlay, Flex, useDisclosure } from '@chakra-ui/react'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
-import SearchModal from './SearchModal'
+import MessagesDrawer from '../crew/MessagesDrawer'
+import ErrorBoundary from '../common/ErrorBoundary'
+import usePresence from '../../hooks/usePresence'
+import { useAuth } from '../../hooks/useAuth'
+import { countUnread } from '../../lib/api/crew'
 import { getOrderStats } from '../../lib/api/orders'
 import { countNewQuotes } from '../../lib/api/quotes'
 
@@ -13,7 +17,11 @@ const PREVIEW_MODE = import.meta.env.DEV && import.meta.env.VITE_PULSE_PREVIEW =
 
 export default function Layout() {
   const menu = useDisclosure()
-  const search = useDisclosure()
+  const messages = useDisclosure()
+  const { user } = useAuth()
+  usePresence(user?.id)
+  const [partner, setPartner] = useState(null)
+  const [unread, setUnread] = useState(0)
   const location = useLocation()
   const [badges, setBadges] = useState({})
 
@@ -36,19 +44,17 @@ export default function Layout() {
     }
   }, [location.pathname])
 
-  // "/" opens search when not typing in a field
+  // unread messages, refreshed on route change and every minute
   useEffect(() => {
-    const onKey = (e) => {
-      const tag = e.target?.tagName
-      const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable
-      if (e.key === '/' && !typing && !search.isOpen) {
-        e.preventDefault()
-        search.onOpen()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [search])
+    if (!user?.id) return undefined
+    let alive = true
+    const load = () => countUnread(user.id).then((n) => alive && setUnread(n)).catch(() => {})
+    load()
+    const t = setInterval(load, 60 * 1000)
+    return () => { alive = false; clearInterval(t) }
+  }, [user?.id, location.pathname, messages.isOpen])
+
+  const openMessages = (member) => { setPartner(member || null); messages.onOpen() }
 
   return (
     <Flex minH="100vh" bg="paper">
@@ -79,13 +85,16 @@ export default function Layout() {
             PREVIEW MODE · fixture data · not connected to Supabase
           </Box>
         )}
-        <TopBar onOpenMenu={menu.onOpen} onOpenSearch={search.onOpen} />
-        <Box as="main" px={{ base: 4, md: 6, xl: 8 }} py={{ base: 5, md: 6 }} maxW="1440px" mx="auto">
-          <Outlet />
+        <TopBar onOpenMenu={menu.onOpen} onOpenMessages={openMessages} unread={unread} />
+        {/* Same left padding as the search field in TopBar. Content lines up with it. */}
+        <Box as="main" px={{ base: 4, md: 6 }} py={{ base: 5, md: 6 }} maxW="1600px">
+          <ErrorBoundary resetKey={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </Box>
       </Box>
 
-      <SearchModal isOpen={search.isOpen} onClose={search.onClose} />
+      <MessagesDrawer isOpen={messages.isOpen} onClose={messages.onClose} initialPartner={partner} />
 
     </Flex>
   )

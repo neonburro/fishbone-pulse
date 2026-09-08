@@ -8,11 +8,13 @@ import { getAllSettings } from '../../lib/api/settings'
 import StoreTab from './StoreTab'
 import { AnnouncementTab, OrderingTab, PaymentsTab, ShippingTab, TaxTab } from './ShopTabs'
 import AccountTab from './AccountTab'
+import PricingTab from './PricingTab'
 import TeamTab from './TeamTab'
 
 const TABS = [
   { key: 'store', label: 'Store' },
   { key: 'ordering', label: 'Ordering' },
+  { key: 'pricing', label: 'Pricing' },
   { key: 'tax', label: 'Tax' },
   { key: 'shipping', label: 'Shipping' },
   { key: 'payments', label: 'Payments' },
@@ -55,7 +57,7 @@ export default function Settings() {
 
   return (
     <MotionFade>
-      <PageHeader eyebrow="Shop" title="Settings" description="Store details, pricing rules, storefront options, your team and your account." />
+      <PageHeader eyebrow="Shop" title="Settings" description="Store details, pricing, storefront options, your team and your account." />
       <Tabs index={tabIndex} onChange={setTab} isLazy>
         <TabList mb={5} overflowX="auto">
           {TABS.map((t) => (
@@ -75,6 +77,9 @@ export default function Settings() {
             </TabPanel>
             <TabPanel p={0}>
               <OrderingTab settings={settings} onSaved={onSaved} />
+            </TabPanel>
+            <TabPanel p={0}>
+              <PricingTab settings={settings} onSaved={onSaved} />
             </TabPanel>
             <TabPanel p={0}>
               <TaxTab settings={settings} onSaved={onSaved} />

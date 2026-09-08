@@ -561,3 +561,11 @@ export const activity = [
   { id: 'act-5', user_id: 'admin-2', user_email: 'joel@fishbonegraphics.example', user_name: 'Joel Fisher', action: 'created', entity_type: 'category', entity_id: 'cat-posters', entity_name: 'Posters & Prints', details: {}, created_at: daysAgo(4, 15) },
   { id: 'act-6', user_id: 'admin-1', user_email: 'rae@fishbonegraphics.example', user_name: 'Rae Fisher', action: 'reordered', entity_type: 'category', entity_id: null, entity_name: 'Categories', details: {}, created_at: daysAgo(4, 15) },
 ]
+
+// ── narrowed for review (2026-09-07) ─────────────────────────────────────
+// Three jobs with recent dates are enough to read the flow. The rest of the
+// seed stays above for the day we want a fuller board.
+orders.splice(3)
+customers.splice(0, customers.length, ...customers.filter((c) => orders.some((o) => o.customer_id === c.id)))
+quotes.splice(3)
+activity.splice(6)

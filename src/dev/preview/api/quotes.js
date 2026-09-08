@@ -41,3 +41,15 @@ export async function countNewQuotes() {
   await wait()
   return state.quotes.filter((q) => q.status === 'new').length
 }
+
+
+export async function startRun(_requestId) {
+  await wait()
+  return { order_id: 'ord-1', order_number: 'FB-26-01007', existing: false }
+}
+
+
+export async function trashRequest(id, initials) { await wait(); if (String(initials || '').length < 2) throw new Error('Your initials, two letters at least.'); return true }
+export async function restoreRequest() { await wait(); return true }
+export async function purgeRequests(ids) { await wait(); return ids.length }
+export async function listTrashedRequests() { await wait(); return [] }

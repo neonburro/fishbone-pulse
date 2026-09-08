@@ -89,9 +89,9 @@ export default function Orders() {
   return (
     <MotionFade>
       <PageHeader
-        eyebrow="Job board"
-        title="Orders"
-        description="Every order placed through the storefront. Click a row to review items, artwork and payment."
+        eyebrow="On the press"
+        title="Runs"
+        description="Every run that came through the site. Open one to see the job, the art and the money."
         actions={<SearchInput value={search} onChange={setSearch} placeholder="Order # or customer email" />}
       />
 

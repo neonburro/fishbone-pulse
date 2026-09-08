@@ -70,3 +70,12 @@ export async function countProducts() {
   await wait()
   return state.products.length
 }
+
+
+export async function updateDecorationOption(id, patch) {
+  await wait()
+  const i = fx.decorationOptions.findIndex((o) => o.id === id)
+  if (i < 0) throw new Error('Not found')
+  fx.decorationOptions[i] = { ...fx.decorationOptions[i], ...patch }
+  return clone(fx.decorationOptions[i])
+}

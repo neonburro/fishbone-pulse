@@ -1,74 +1,61 @@
 import { extendTheme } from '@chakra-ui/react'
 
 // "Ink & Bone" — Pulse uses the light (paper) variant for legibility.
+// Ink, paper and one orange. The same ink and paper numbers as the
+// storefront so the two apps are one family, and orange instead of the
+// storefront's red so you always know which room you are in. `ember` is the
+// orange. `red` is an alias of it so shared components written for the
+// storefront still light up the right color here. `river` and `hivis` are repainted to neutrals
+// so anything still reading them goes quiet. Status colors for orders and
+// payments stay semantic (green paid, yellow pending) and live in
+// lib/statusMeta.js, they are outcomes, not decoration.
+const ember = {
+  50: '#FFF1E8', 100: '#FFD9C2', 200: '#FFB48A', 300: '#FF9A62', 400: '#FF8140',
+  500: '#FF6A13', 600: '#E55A0C', 700: '#BF4A08', 800: '#8F3705', 900: '#5A2303',
+}
+const red = ember
 const colors = {
   ink: {
-    50: '#F4F4F5',
-    100: '#DCDCDF',
-    200: '#B5B5BB',
-    300: '#8E8E96',
-    400: '#5F5F67',
-    500: '#4A4741', // muted text on paper
-    600: '#26262B', // border (dark)
-    700: '#1C1C1F', // raised
-    800: '#141416', // surface
-    900: '#0B0B0C', // page bg (dark) / primary text on paper
+    50: '#F6F2EA',
+    100: '#ECE6DA',
+    200: '#D9D2C4',
+    300: '#9AA1AA', // placeholder, quiet type
+    400: '#6B727C',
+    500: '#4F4F54', // muted text on paper
+    600: '#2C2F35', // border on ink
+    700: '#26262A', // raised on ink
+    800: '#1D1D20', // surface on ink
+    900: '#161618', // page on ink, primary text on paper
   },
   bone: {
-    50: '#FAF7F2', // paper
-    100: '#F1ECE3', // paper2
-    200: '#E6DFD2',
-    300: '#D9D2C5', // muted
-    400: '#B8B0A2', // subtle
-    500: '#F2EDE4', // primary text on dark
-    600: '#9A917F',
-    700: '#7A7263',
-    800: '#5A5449',
-    900: '#3A362F',
+    50: '#F6F2EA', // paper
+    100: '#ECE6DA', // paper 2
+    200: '#D9D2C4', // rules on paper
+    300: '#B9B2A4',
+    400: '#9AA1AA',
+    500: '#EFEAE0', // primary text on ink
+    600: '#8C8578',
+    700: '#6B6760',
+    800: '#4F4B44',
+    900: '#2A2925',
   },
-  paper: '#FAF7F2',
-  paper2: '#F1ECE3',
-  ember: {
-    50: '#FFF1E8',
-    100: '#FFD9C2',
-    200: '#FFB68A',
-    300: '#FF9556',
-    400: '#FF8140', // hover
-    500: '#FF6A13', // primary
-    600: '#E55A0C', // pressed
-    700: '#BF4A09',
-    800: '#8F3707',
-    900: '#5E2404',
-  },
-  river: {
-    50: '#E9F8F6',
-    100: '#C6EEE9',
-    200: '#8EDDD4',
-    300: '#5FCFC3',
-    400: '#45C7B8', // hover
-    500: '#2BB3A3', // secondary
-    600: '#229487',
-    700: '#1A736A',
-    800: '#12524B',
-    900: '#0A322E',
-  },
-  hivis: {
-    50: '#F9FDE8',
-    100: '#EFFAC2',
-    200: '#E2F58B',
-    300: '#D4F15A',
-    400: '#C6F135', // fluorescent highlight
-    500: '#AEDB1F',
-    600: '#8FB515',
-    700: '#6F8C10',
-    800: '#4F640B',
-    900: '#2F3C06',
-  },
+  paper: '#F6F2EA',
+  paper2: '#ECE6DA',
+  red,
+  ember: red,
+  river: { 50: '#F6F2EA', 100: '#ECE6DA', 200: '#D9D2C4', 300: '#B9B2A4', 400: '#9AA1AA', 500: '#6B727C', 600: '#4F4F54', 700: '#3A3A3E', 800: '#2C2F35', 900: '#161618' },
+  hivis: { 50: '#F6F2EA', 100: '#ECE6DA', 200: '#D9D2C4', 300: '#B9B2A4', 400: '#FF6A13', 500: '#FF6A13', 600: '#E55A0C', 700: '#BF4A08', 800: '#8F3705', 900: '#5A2303' },
 }
 
+// Type on orange is ink, not off white. Orange is bright enough that ink
+// reads at eight to one, and it is the pairing the old shop sign used.
+export const ON_RED = '#161618'
+export const ON_EMBER = ON_RED
+export const ACCENT = ember[500]
+
 const fonts = {
-  heading: `"Barlow Condensed", "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif`,
-  body: `"Barlow", system-ui, -apple-system, "Segoe UI", sans-serif`,
+  heading: `"Barlow Condensed", "Arial Narrow", system-ui, sans-serif`,
+  body: `"Karla", "Helvetica Neue", system-ui, sans-serif`,
   mono: `"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`,
 }
 
@@ -79,19 +66,21 @@ const theme = extendTheme({
   },
   colors,
   fonts,
+  // Same corners as the storefront.
   radii: {
     none: '0',
-    sm: '2px',
-    base: '4px',
-    md: '4px',
-    lg: '6px',
-    xl: '8px',
-    '2xl': '12px',
+    sm: '8px',
+    base: '10px',
+    md: '12px',
+    lg: '18px',
+    xl: '24px',
+    '2xl': '24px',
     full: '9999px',
   },
   shadows: {
-    card: '0 1px 2px rgba(11, 11, 12, 0.06), 0 0 0 1px rgba(11, 11, 12, 0.06)',
+    card: '0 1px 2px rgba(22, 22, 24, 0.05), 0 0 0 1px rgba(22, 22, 24, 0.06)',
     outline: '0 0 0 3px rgba(255, 106, 19, 0.45)',
+    paper: '0 20px 60px rgba(0,0,0,0.18)',
   },
   semanticTokens: {
     colors: {
@@ -109,8 +98,12 @@ const theme = extendTheme({
         fontSize: '15px',
         lineHeight: '1.5',
       },
-      '*::selection': {
-        bg: 'ember.100',
+      '*::selection': { bg: 'ember.500', color: '#161618' },
+      'input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, textarea:-webkit-autofill': {
+        WebkitBoxShadow: '0 0 0 1000px #FFFFFF inset',
+        WebkitTextFillColor: '#161618',
+        caretColor: '#161618',
+        transition: 'background-color 9999s ease-out 0s',
       },
       ':focus-visible': {
         outline: 'none',
@@ -121,16 +114,16 @@ const theme = extendTheme({
     Heading: {
       baseStyle: {
         fontFamily: 'heading',
-        fontWeight: 700,
+        fontWeight: 600,
         textTransform: 'uppercase',
-        letterSpacing: '-0.01em',
+        letterSpacing: '0',
         color: 'ink.900',
       },
     },
     Button: {
       baseStyle: {
         fontFamily: 'heading',
-        fontWeight: 700,
+        fontWeight: 600,
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
         borderRadius: 'base',
@@ -141,15 +134,15 @@ const theme = extendTheme({
       },
       variants: {
         solid: (props) => {
-          if (props.colorScheme === 'ember') {
+          if (props.colorScheme === 'ember' || props.colorScheme === 'red') {
             return {
-              bg: 'ember.500',
-              color: 'white',
-              _hover: { bg: 'ember.400', _disabled: { bg: 'ember.500' } },
-              _active: { bg: 'ember.600' },
+              bg: 'red.500',
+              color: ON_RED,
+              _hover: { bg: 'red.400', _disabled: { bg: 'red.500' } },
+              _active: { bg: 'red.600' },
             }
           }
-          if (props.colorScheme === 'ink') {
+          if (props.colorScheme === 'ink' || props.colorScheme === 'river') {
             return {
               bg: 'ink.900',
               color: 'bone.500',
@@ -157,18 +150,10 @@ const theme = extendTheme({
               _active: { bg: 'ink.800' },
             }
           }
-          if (props.colorScheme === 'river') {
-            return {
-              bg: 'river.500',
-              color: 'white',
-              _hover: { bg: 'river.400' },
-              _active: { bg: 'river.600' },
-            }
-          }
           return {}
         },
         outline: {
-          borderColor: 'bone.300',
+          borderColor: 'bone.200',
           color: 'ink.900',
           bg: 'white',
           _hover: { bg: 'paper2', borderColor: 'ink.500' },
@@ -187,8 +172,8 @@ const theme = extendTheme({
         outline: {
           field: {
             bg: 'white',
-            borderColor: 'bone.300',
-            borderRadius: 'base',
+            borderColor: 'bone.200',
+            borderRadius: 'sm',
             _hover: { borderColor: 'bone.400' },
             _focusVisible: {
               borderColor: 'ember.500',
@@ -197,55 +182,56 @@ const theme = extendTheme({
           },
         },
       },
-      defaultProps: { focusBorderColor: 'ember.500' },
+      defaultProps: { focusBorderColor: 'red.500' },
     },
     Textarea: {
       variants: {
         outline: {
           bg: 'white',
-          borderColor: 'bone.300',
-          borderRadius: 'base',
+          borderColor: 'bone.200',
+          borderRadius: 'sm',
           _hover: { borderColor: 'bone.400' },
           _focusVisible: { borderColor: 'ember.500', boxShadow: '0 0 0 1px #FF6A13' },
         },
       },
-      defaultProps: { focusBorderColor: 'ember.500' },
+      defaultProps: { focusBorderColor: 'red.500' },
     },
     Select: {
       variants: {
         outline: {
           field: {
             bg: 'white',
-            borderColor: 'bone.300',
-            borderRadius: 'base',
+            borderColor: 'bone.200',
+            borderRadius: 'sm',
             _hover: { borderColor: 'bone.400' },
             _focusVisible: { borderColor: 'ember.500', boxShadow: '0 0 0 1px #FF6A13' },
           },
         },
       },
-      defaultProps: { focusBorderColor: 'ember.500' },
+      defaultProps: { focusBorderColor: 'red.500' },
     },
     NumberInput: {
       variants: {
         outline: {
           field: {
             bg: 'white',
-            borderColor: 'bone.300',
-            borderRadius: 'base',
+            borderColor: 'bone.200',
+            borderRadius: 'sm',
             _focusVisible: { borderColor: 'ember.500', boxShadow: '0 0 0 1px #FF6A13' },
           },
         },
       },
-      defaultProps: { focusBorderColor: 'ember.500' },
+      defaultProps: { focusBorderColor: 'red.500' },
     },
     FormLabel: {
       baseStyle: {
-        fontSize: 'xs',
-        fontWeight: 600,
+        fontFamily: 'mono',
+        fontSize: '11px',
+        fontWeight: 500,
         textTransform: 'uppercase',
-        letterSpacing: '0.08em',
+        letterSpacing: '0.14em',
         color: 'ink.500',
-        mb: 1,
+        mb: 1.5,
       },
     },
     Badge: {

@@ -57,7 +57,7 @@ import {
 import { listCategories } from '../../lib/api/categories'
 import { slugify } from '../../utils/format'
 
-const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL']
+const DEFAULT_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL']
 const PRINT_LOCATION_SUGGESTIONS = ['Front', 'Back', 'Left chest', 'Right chest', 'Left sleeve', 'Right sleeve', 'Nape', 'Front pocket']
 const BADGE_SUGGESTIONS = ['New', 'Best seller', 'Festival favorite', 'Eco', 'Made in USA', 'Heavyweight']
 

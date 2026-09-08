@@ -36,9 +36,9 @@ function HoursEditor({ value = [], onChange }) {
       <Button size="sm" variant="outline" leftIcon={<FiPlus />} alignSelf="flex-start" onClick={() => onChange([...rows, { days: '', open: '', close: '' }])}>
         Add hours
       </Button>
-      <FormHelperText color="ink.300" mt={0}>
+      <Text fontSize="xs" color="ink.300" mt={0}>
         Use “Closed” in the open field for days you are shut, e.g. Sun · Closed.
-      </FormHelperText>
+      </Text>
     </Stack>
   )
 }

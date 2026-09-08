@@ -16,6 +16,7 @@ export async function listOrders({ status, search, page = 1, pageSize = PAGE_SIZ
   let query = supabase
     .from('orders')
     .select(LIST_COLUMNS, { count: 'exact' })
+    .is('deleted_at', null)
     .order('created_at', { ascending: false })
 
   if (status && status !== 'all') query = query.eq('status', status)
@@ -58,6 +59,7 @@ export async function getOrder(id) {
       .select(
         `*,
          customer:customers(id, email, name, phone, company, notes),
+         request:quote_requests!orders_request_id_fkey(id, request_type, event_name, event_date, needed_by, quantity_estimate, garment_interest, print_locations, description, artwork_files, status, created_at),
          items:order_items(*),
          events:order_events(*)`,
       )
@@ -164,4 +166,128 @@ export async function recentOrders(limit = 10) {
       .order('created_at', { ascending: false })
       .limit(limit),
   )
+}
+
+
+/**
+ * Send the quote. Mints a token through issue_quote (admin only, logs the
+ * event, moves pending_review to quoted) then hands the summary to the
+ * send-quote Netlify function which emails the customer the link.
+ */
+export async function sendQuote(order, note) {
+  const { data, error } = await supabase.rpc('issue_quote', { p_order_id: order.id, p_note: note || null })
+  if (error) throw new Error(error.message || 'Could not issue the quote')
+  const payload = {
+    token: data.token,
+    order_number: order.order_number,
+    contact: order.contact,
+    needed_by: order.needed_by,
+    quote_note: note || order.quote_note || null,
+    items: (order.items || []).map((it) => ({ product_name: it.product_name, variant_label: it.variant_label, quantity: it.quantity, unit_price: it.unit_price, line_total: it.line_total, print_locations: it.print_locations, size_breakdown: it.size_breakdown, notes: it.notes })),
+    subtotal: order.subtotal, setup_fees: order.setup_fees, discount: order.discount, shipping: order.shipping, tax: order.tax, total: order.total,
+  }
+  let mailed = false
+  try {
+    const res = await fetch('/.netlify/functions/send-quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    const j = await res.json().catch(() => ({}))
+    mailed = Boolean(j.ok)
+  } catch { mailed = false }
+  await logActivity('quote_sent', 'order', order.id, order.order_number, { mailed })
+  return { token: data.token, mailed }
+}
+
+
+// ── a run from scratch ──────────────────────────────────────────────────────
+export async function createRun({ contact, needed_by, notes, fulfillment }) {
+  const { data, error } = await supabase.rpc('start_run_manual', { p_contact: contact, p_needed_by: needed_by || null, p_notes: notes || null, p_fulfillment: fulfillment || 'pickup' })
+  if (error) throw new Error(error.message || 'Could not open the run')
+  await logActivity('created', 'order', data.order_id, data.order_number, { source: 'pulse' })
+  return data
+}
+
+// ── line items ──────────────────────────────────────────────────────────────
+const num = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? 0 : Number(v))
+
+export async function saveItem(orderId, item) {
+  const qty = Math.max(0, Math.round(num(item.quantity)))
+  const unit = Math.max(0, num(item.unit_price))
+  const row = {
+    order_id: orderId,
+    product_id: item.product_id || null,
+    variant_id: item.variant_id || null,
+    product_name: String(item.product_name || '').trim() || 'Garment',
+    variant_label: String(item.variant_label || '').trim() || null,
+    sku: item.sku || null,
+    quantity: qty,
+    unit_price: unit,
+    line_total: Math.round(unit * qty * 100) / 100,
+    decoration_method: 'screen_print',
+    print_locations: Array.isArray(item.print_locations) ? item.print_locations : [],
+    size_breakdown: item.size_breakdown && typeof item.size_breakdown === 'object' ? item.size_breakdown : {},
+    artwork_files: Array.isArray(item.artwork_files) ? item.artwork_files : [],
+    notes: String(item.notes || '').trim() || null,
+  }
+  if (item.id) row.id = item.id
+  const saved = unwrap(await supabase.from('order_items').upsert(row, { onConflict: 'id' }).select('*').single())
+  const totals = await recalcTotals(orderId)
+  return { item: saved, totals }
+}
+
+export async function removeItem(orderId, itemId) {
+  unwrap(await supabase.from('order_items').delete().eq('id', itemId).eq('order_id', orderId))
+  return recalcTotals(orderId)
+}
+
+export async function recalcTotals(orderId) {
+  const { data, error } = await supabase.rpc('recalc_order_totals', { p_order_id: orderId })
+  if (error) throw new Error(error.message || 'Could not total the run')
+  return data
+}
+
+export async function updateOrderMoney(orderId, { setup_fees, discount, shipping }) {
+  unwrap(await supabase.from('orders').update({ setup_fees: num(setup_fees), discount: num(discount), shipping: num(shipping) }).eq('id', orderId).select('id').single())
+  return recalcTotals(orderId)
+}
+
+// ── trash ───────────────────────────────────────────────────────────────────
+// Two letters and a time on the row. It leaves the lists, it can come back,
+// and Delete forever is a second, separate tap.
+export async function trashOrder(id, initials, { orderNumber } = {}) {
+  const ini = String(initials || '').trim().toUpperCase().slice(0, 4)
+  if (ini.length < 2) throw new Error('Your initials, two letters at least.')
+  unwrap(await supabase.from('orders').update({ deleted_at: new Date().toISOString(), deleted_by: ini }).eq('id', id).select('id').single())
+  await logActivity('trashed', 'order', id, orderNumber, { by: ini })
+  return true
+}
+
+export async function restoreOrder(id) {
+  unwrap(await supabase.from('orders').update({ deleted_at: null, deleted_by: null }).eq('id', id).select('id').single())
+  return true
+}
+
+export async function purgeOrders(ids) {
+  if (!ids?.length) return 0
+  unwrap(await supabase.from('orders').delete().in('id', ids).not('deleted_at', 'is', null).select('id'))
+  return ids.length
+}
+
+export async function listTrashedOrders() {
+  return unwrap(await supabase.from('orders').select('id, order_number, contact, total, status, deleted_at, deleted_by, created_at').not('deleted_at', 'is', null).order('deleted_at', { ascending: false })) || []
+}
+
+// ── reminder ────────────────────────────────────────────────────────────────
+export async function sendReminder(order) {
+  if (!order.quote_token) throw new Error('Send the quote first.')
+  const payload = {
+    token: order.quote_token, order_number: order.order_number, contact: order.contact, needed_by: order.needed_by, quote_note: order.quote_note, reminder: true,
+    items: (order.items || []).map((it) => ({ product_name: it.product_name, variant_label: it.variant_label, quantity: it.quantity, unit_price: it.unit_price, line_total: it.line_total, print_locations: it.print_locations, size_breakdown: it.size_breakdown, notes: it.notes })),
+    subtotal: order.subtotal, setup_fees: order.setup_fees, discount: order.discount, shipping: order.shipping, tax: order.tax, total: order.total,
+  }
+  let mailed = false
+  try {
+    const res = await fetch('/.netlify/functions/send-quote', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    mailed = Boolean((await res.json().catch(() => ({}))).ok)
+  } catch { mailed = false }
+  await addOrderEvent(order.id, 'Quote reminder sent to the customer', { type: 'quote_reminder', meta: { mailed } })
+  return { mailed }
 }

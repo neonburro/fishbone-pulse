@@ -6,7 +6,7 @@ import AuthShell from './AuthShell'
 import AuthAlert from './AuthAlert'
 import { cleanUsername, isValidUsername, requestAccount } from '../../lib/api/auth'
 import { friendlyError } from '../../lib/supabase'
-import { ADMIN_CONTACT_EMAIL } from '../../lib/constants'
+import { ADMIN_CONTACT_EMAIL, notifyAdmin } from '../../lib/constants'
 
 export default function RequestAccount() {
   const [form, setForm] = useState({ name: '', email: '', requested_username: '', message: '' })
@@ -26,6 +26,7 @@ export default function RequestAccount() {
     setError('')
     try {
       await requestAccount(form)
+      notifyAdmin({ kind: 'account_request', name: form.name, email: form.email, description: form.message, extra: { 'Wants username': form.requested_username || '' } })
       setDone(true)
     } catch (err) {
       setError(friendlyError(err, 'Could not send your request'))
@@ -36,16 +37,16 @@ export default function RequestAccount() {
 
   if (done) {
     return (
-      <AuthShell eyebrow="Request sent" title="You're on the list" headline="Welcome to the crew.">
+      <AuthShell eyebrow="Request sent" title="You're on the list" headline="You are on the list.">
         <HStack align="flex-start" spacing={3} bg="white" p={4} borderRadius="base" boxShadow="card">
-          <Box color="river.500" mt="2px" fontSize="20px">
+          <Box color="ember.500" mt="2px" fontSize="20px">
             <FiCheckCircle />
           </Box>
           <Box>
             <Text fontWeight={600}>We'll email you when it's approved.</Text>
             <Text fontSize="sm" color="ink.500" mt={1}>
               A shop admin reviews every request. Once approved you will get an invite link to set your password. Questions? Write to{' '}
-              <Link href={`mailto:${ADMIN_CONTACT_EMAIL}`} color="river.600" fontWeight={600}>
+              <Link href={`mailto:${ADMIN_CONTACT_EMAIL}`} color="ink.900" fontWeight={600}>
                 {ADMIN_CONTACT_EMAIL}
               </Link>
               .
@@ -64,15 +65,15 @@ export default function RequestAccount() {
       eyebrow="Fishbone Pulse"
       title="Request an account"
       intro="Pulse is for the Fishbone crew. Tell us who you are and an admin will set you up."
-      headline="Welcome to the crew."
+      headline="You are on the list."
       footer={
         <Text>
           Already have access?{' '}
-          <Link as={RouterLink} to="/login/" color="river.600" fontWeight={600}>
+          <Link as={RouterLink} to="/login/" color="ink.900" fontWeight={600}>
             Sign in
           </Link>
           . Admin contact:{' '}
-          <Link href={`mailto:${ADMIN_CONTACT_EMAIL}`} color="river.600">
+          <Link href={`mailto:${ADMIN_CONTACT_EMAIL}`} color="ink.900">
             {ADMIN_CONTACT_EMAIL}
           </Link>
         </Text>

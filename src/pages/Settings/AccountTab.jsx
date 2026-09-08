@@ -6,6 +6,9 @@ import PasswordInput from '../Auth/PasswordInput'
 import { useAuth } from '../../hooks/useAuth'
 import { cleanUsername, isUsernameAvailable, isValidUsername, updateProfile } from '../../lib/api/auth'
 import { supabase, friendlyError } from '../../lib/supabase'
+import { setAvatar, clearAvatar } from '../../lib/api/crew'
+import MemberAvatar from '../../components/crew/MemberAvatar'
+import { useRef } from 'react'
 import { formatDate, formatDateTime } from '../../utils/format'
 
 function ProfileCard() {
@@ -60,9 +63,41 @@ function ProfileCard() {
     }
   }
 
+  const fileRef = useRef(null)
+  const [avatarBusy, setAvatarBusy] = useState(false)
+  const pickAvatar = async (e) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!/^image\//.test(file.type)) return toast({ title: 'Pick an image', status: 'warning' })
+    if (file.size > 4 * 1024 * 1024) return toast({ title: 'Keep it under 4 MB', status: 'warning' })
+    setAvatarBusy(true)
+    try { await setAvatar(user.id, file); await refreshProfile(); toast({ title: 'Avatar set', status: 'success', duration: 1500 }) }
+    catch (err) { toast({ title: 'Could not set avatar', description: err.message, status: 'error' }) }
+    finally { setAvatarBusy(false) }
+  }
+  const dropAvatar = async () => {
+    setAvatarBusy(true)
+    try { await clearAvatar(user.id); await refreshProfile() } catch (err) { toast({ title: 'Could not remove avatar', description: err.message, status: 'error' }) } finally { setAvatarBusy(false) }
+  }
+
   return (
     <Card title="Profile">
       <Stack spacing={4}>
+        <FormControl>
+          <FormLabel>Your face</FormLabel>
+          <HStack spacing={4}>
+            <MemberAvatar member={{ name: displayName || profile?.display_name, avatar_url: profile?.avatar_url, online: true }} size="lg" presence={false} />
+            <Stack spacing={1}>
+              <HStack>
+                <Button size="sm" variant="outline" onClick={() => fileRef.current?.click()} isLoading={avatarBusy}>{profile?.avatar_url ? 'Change' : 'Pick a photo'}</Button>
+                {profile?.avatar_url && <Button size="sm" variant="ghost" onClick={dropAvatar} isDisabled={avatarBusy}>Remove</Button>}
+              </HStack>
+              <FormHelperText color="ink.300" mt={0}>Shows at the bottom of the sidebar and in the online strip. Square photos work best.</FormHelperText>
+            </Stack>
+            <input ref={fileRef} type="file" accept="image/*" hidden onChange={pickAvatar} />
+          </HStack>
+        </FormControl>
         <FormControl isRequired>
           <FormLabel>Display name</FormLabel>
           <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Rae Fisher" />

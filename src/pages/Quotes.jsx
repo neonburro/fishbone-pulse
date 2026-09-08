@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -43,7 +43,8 @@ import MotionFade from '../components/common/MotionFade'
 import ArtworkList from '../components/orders/ArtworkList'
 import { QuoteStatusBadge } from '../components/common/StatusBadge'
 import { QUOTE_STATUS_META } from '../lib/statusMeta'
-import { listQuotes, QUOTE_REQUEST_TYPES, QUOTE_STATUSES, updateQuoteNotes, updateQuoteStatus } from '../lib/api/quotes'
+import { listQuotes, QUOTE_REQUEST_TYPES, QUOTE_STATUSES, updateQuoteNotes, updateQuoteStatus, startRun, getQuote, trashRequest } from '../lib/api/quotes'
+import InitialsDialog from '../components/common/InitialsDialog'
 import { formatDate, formatDateTime, humanize } from '../utils/format'
 import Mono from '../components/common/Mono'
 
@@ -90,6 +91,30 @@ export default function Quotes() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(null)
+  const [trashing, setTrashing] = useState(false)
+  const [starting, setStarting] = useState(false)
+  const navigate = useNavigate()
+
+  // /quotes?open=<id> opens that request straight away, the run page links here.
+  useEffect(() => {
+    const id = params.get('open')
+    if (!id) return
+    getQuote(id).then((q) => { if (q) setSelected(q) }).catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.get('open')])
+
+  const beginRun = async () => {
+    if (!selected) return
+    setStarting(true)
+    try {
+      const r = await startRun(selected.id)
+      navigate(`/orders/${r.order_id}`)
+    } catch (err) {
+      toast({ title: 'Could not start the run', description: err.message, status: 'error' })
+    } finally {
+      setStarting(false)
+    }
+  }
   const [notes, setNotes] = useState('')
   const [saving, setSaving] = useState('')
   const toast = useToast()
@@ -161,7 +186,7 @@ export default function Quotes() {
     <MotionFade>
       <PageHeader
         eyebrow="Inbound"
-        title="Quote requests"
+        title="Requests"
         description="Festival merch, crew shirts and custom jobs that came through the quote and contact forms."
         actions={<SearchInput value={search} onChange={setSearch} placeholder="Name, email, company or event" />}
       />
@@ -363,14 +388,18 @@ export default function Quotes() {
                   </Text>
                 </FormControl>
 
-                <HStack>
-                  {/* TODO(convert-to-order): "Convert to order" goes here. It should pre-fill place_order's payload
-                      from this request (contact, garment_interest -> items, needed_by, delivery -> fulfillment)
-                      and link the resulting order back via quote_requests.internal_notes or a future order_id column. */}
-                  <Button as="a" href={`mailto:${selected.email}?subject=${encodeURIComponent(`Your Fishbone Graphics quote${selected.event_name ? ` — ${selected.event_name}` : ''}`)}`} size="sm" variant="outline">
+                <HStack spacing={2} flexWrap="wrap">
+                  {selected.order?.id ? (
+                    <Button as={RouterLink} to={`/orders/${selected.order.id}`} size="sm">Open run {selected.order.order_number}</Button>
+                  ) : (
+                    <Button size="sm" onClick={beginRun} isLoading={starting}>Start a run from this</Button>
+                  )}
+                  <Button as="a" href={`mailto:${selected.email}?subject=${encodeURIComponent(`Your Fishbone Graphics proof${selected.event_name ? ` for ${selected.event_name}` : ''}`)}`} size="sm" variant="outline">
                     Reply by email
                   </Button>
+                  <Button size="sm" variant="ghost" color="ink.500" onClick={() => setTrashing(true)}>Trash</Button>
                 </HStack>
+                <InitialsDialog isOpen={trashing} onClose={() => setTrashing(false)} title="To the trash" body="It leaves the list and waits in the trash with your initials on it. You can bring it back from there." confirmLabel="Trash it" onConfirm={async (ini) => { await trashRequest(selected.id, ini, { name: selected.name }); setSelected(null); load() }} />
               </Stack>
             )}
           </DrawerBody>

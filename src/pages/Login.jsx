@@ -67,14 +67,14 @@ export default function Login() {
   return (
     <AuthShell
       title="Sign in"
-      intro="Team access only. Use your Pulse username or the email on your account."
+      intro="Crew only. If you print here, you belong here."
       footer={
         <Text>
-          Need access?{' '}
-          <Link as={RouterLink} to="/request-account/" color="river.600" fontWeight={600}>
-            Request an account
+          No login yet?{' '}
+          <Link as={RouterLink} to="/request-account/" color="ink.900" fontWeight={600}>
+            Ask for one
           </Link>{' '}
-          and a shop admin will approve it.
+          and a shop admin will wave you in.
         </Text>
       }
     >
@@ -91,14 +91,14 @@ export default function Login() {
               spellCheck={false}
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="treagan or you@fishbonegraphics.com"
+              placeholder="Your username or email"
               size="lg"
               autoFocus
             />
           </FormControl>
           <FormControl isRequired>
             <FormLabel htmlFor="password">Password</FormLabel>
-            <PasswordInput id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            <PasswordInput id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" />
           </FormControl>
           <Button type="submit" size="lg" colorScheme="ember" isLoading={loading} loadingText="Signing in" w="full" mt={2}>
             Sign in

@@ -255,7 +255,7 @@ export default function Showcase() {
 
   return (
     <MotionFade>
-      <PageHeader eyebrow="Storefront" title="Showcase" description="The graphics wall, work gallery and hero images customers see. Drop photos in, caption them, drag to reorder." />
+      <PageHeader eyebrow="Storefront" title="The wall" description="The graphics wall, work gallery and hero images customers see. Drop photos in, caption them, drag to reorder." />
 
       <Tabs
         index={tabIndex}

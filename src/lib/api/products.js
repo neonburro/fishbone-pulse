@@ -182,6 +182,10 @@ export async function listDecorationOptions() {
   )
 }
 
+export async function updateDecorationOption(id, patch) {
+  return unwrap(await supabase.from('decoration_options').update(patch).eq('id', id).select('id, key, name, setup_fee, per_location_fee, is_active').single())
+}
+
 export async function countProducts() {
   const { count, error } = await supabase.from('products').select('id', { count: 'exact', head: true })
   if (error) throw new Error(error.message)

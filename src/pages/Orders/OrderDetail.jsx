@@ -9,6 +9,7 @@ import {
   Grid,
   GridItem,
   HStack,
+  IconButton,
   Input,
   Link,
   Select,
@@ -28,7 +29,10 @@ import {
   WrapItem,
   Tag,
 } from '@chakra-ui/react'
-import { FiArrowLeft, FiPrinter, FiMail, FiPhone, FiMapPin, FiPackage, FiSend } from 'react-icons/fi'
+import { FiArrowLeft, FiPrinter, FiMail, FiPhone, FiMapPin, FiPackage, FiSend, FiPlus, FiEdit2, FiX, FiBell } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import ItemDrawer from '../../components/runs/ItemDrawer'
+import InitialsDialog from '../../components/common/InitialsDialog'
 import Card from '../../components/common/Card'
 import Mono from '../../components/common/Mono'
 import ErrorState from '../../components/common/ErrorState'
@@ -49,6 +53,10 @@ import {
   updateOrderStatus,
   updatePaymentDetails,
   updatePaymentStatus,
+  sendQuote,
+  sendReminder,
+  removeItem,
+  trashOrder,
 } from '../../lib/api/orders'
 import { formatMoney } from '../../utils/money'
 import { formatDate, formatDateTime, humanize, pluralize } from '../../utils/format'
@@ -86,9 +94,48 @@ export default function OrderDetail() {
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState('')
+  const [quoteOpen, setQuoteOpen] = useState(false)
+  const [quoteNote, setQuoteNote] = useState('')
+  const [lineOpen, setLineOpen] = useState(false)
+  const [lineItem, setLineItem] = useState(null)
+  const [trashing, setTrashing] = useState(false)
+  const navigate = useNavigate()
+
+  const doSendQuote = async () => {
+    setSaving('quote')
+    try {
+      const r = await sendQuote(order, quoteNote)
+      await load()
+      setQuoteOpen(false)
+      toast({ title: r.mailed ? `Quote sent to ${order.contact?.email}` : 'Quote issued, email did not go out', description: r.mailed ? undefined : 'The link works. Check RESEND_API_KEY on Netlify.', status: r.mailed ? 'success' : 'warning', duration: 4000 })
+    } catch (err) {
+      fail('Could not send the quote', err)
+    } finally {
+      setSaving('')
+    }
+  }
   const [notes, setNotes] = useState('')
   const [payment, setPayment] = useState({ payment_provider: '', payment_reference: '' })
   const [newNote, setNewNote] = useState('')
+
+  const doReminder = async () => {
+    setSaving('reminder')
+    try {
+      const r = await sendReminder(order)
+      toast({ title: r.mailed ? `Reminder sent to ${order.contact?.email}` : 'Reminder logged, email did not go out', description: r.mailed ? undefined : 'Check RESEND_API_KEY on Netlify.', status: r.mailed ? 'success' : 'warning', duration: 4000 })
+      await load()
+    } catch (err) {
+      toast({ title: 'Could not send the reminder', description: err.message, status: 'error' })
+    } finally { setSaving('') }
+  }
+
+  const editLine = (it) => { setLineItem(it); setLineOpen(true) }
+  const dropLine = async (it) => {
+    setSaving(`line-${it.id}`)
+    try { await removeItem(order.id, it.id); await load() }
+    catch (err) { toast({ title: 'Could not remove the line', description: err.message, status: 'error' }) }
+    finally { setSaving('') }
+  }
 
   const load = useCallback(async () => {
     setError('')
@@ -222,8 +269,40 @@ export default function OrderDetail() {
           <Button as={RouterLink} to={`/orders/${order.id}/ticket`} target="_blank" size="sm" variant="outline" leftIcon={<FiPrinter />}>
             Print job ticket
           </Button>
+          {order.quote_sent_at && !order.quote_accepted_at && (
+            <Button size="sm" variant="outline" leftIcon={<FiBell />} onClick={doReminder} isLoading={saving === 'reminder'}>Send a reminder</Button>
+          )}
+          <Button size="sm" onClick={() => { setQuoteNote(order.quote_note || ''); setQuoteOpen(true) }} isDisabled={Boolean(order.quote_accepted_at)}>
+            {order.quote_accepted_at ? 'Quote accepted' : order.quote_sent_at ? 'Send the quote again' : 'Send the quote'}
+          </Button>
+          <Button size="sm" variant="ghost" color="ink.500" onClick={() => setTrashing(true)}>Trash</Button>
         </HStack>
+        <InitialsDialog isOpen={trashing} onClose={() => setTrashing(false)} title="To the trash" body={`Run ${order.order_number} leaves the board and waits in the trash with your initials on it. You can bring it back from there.`} confirmLabel="Trash it" onConfirm={async (ini) => { await trashOrder(order.id, ini, { orderNumber: order.order_number }); navigate('/orders') }} />
+        <ItemDrawer isOpen={lineOpen} onClose={() => setLineOpen(false)} orderId={order.id} item={lineItem} onSaved={load} />
       </HStack>
+
+      {/* The quote. One card, one note, one button. */}
+      {(quoteOpen || order.quote_sent_at) && (
+        <Card mb={5} title="Quote">
+          <Stack spacing={3}>
+            {order.quote_accepted_at ? (
+              <Text fontSize="sm">Accepted {formatDateTime(order.quote_accepted_at)}{order.quote_accepted_by ? ` by ${order.quote_accepted_by}` : ''}. The run is waiting on payment.</Text>
+            ) : order.quote_sent_at && !quoteOpen ? (
+              <Text fontSize="sm" color="ink.500">Sent {formatDateTime(order.quote_sent_at)} to {order.contact?.email}. Good until {order.quote_expires_at ? formatDate(order.quote_expires_at) : 'the shop says otherwise'}. Not accepted yet.</Text>
+            ) : null}
+            {quoteOpen && !order.quote_accepted_at && (
+              <>
+                <Text fontSize="sm" color="ink.500">The customer gets an email with the items and totals below, a note if you write one, and a link to accept. Check the numbers on this page first, they are what goes out.</Text>
+                <Textarea rows={3} value={quoteNote} onChange={(e) => setQuoteNote(e.target.value)} placeholder="Two color front on Pepper. Art looks good, we will proof the sleeve placement before we burn it." bg="white" />
+                <HStack justify="flex-end">
+                  <Button size="sm" variant="ghost" onClick={() => setQuoteOpen(false)}>Not yet</Button>
+                  <Button size="sm" onClick={doSendQuote} isLoading={saving === 'quote'} isDisabled={!order.contact?.email}>Send to {order.contact?.email || 'the customer'}</Button>
+                </HStack>
+              </>
+            )}
+          </Stack>
+        </Card>
+      )}
 
       {/* Header */}
       <Card mb={5}>
@@ -291,8 +370,11 @@ export default function OrderDetail() {
         <GridItem minW={0}>
           <VStack align="stretch" spacing={5}>
             {/* Items */}
-            <Card title="Items" p={0} sx={{ '& > div:first-of-type': { px: 5, pt: 4, mb: 2 } }}>
-              <Box overflowX="auto">
+            <Card title="Items" p={0} sx={{ '& > div:first-of-type': { px: 5, pt: 4, mb: 2 } }} action={<Button size="xs" leftIcon={<FiPlus />} onClick={() => editLine(null)} isDisabled={Boolean(order.quote_accepted_at)}>Add a line</Button>}>
+              {order.items.length === 0 && (
+                <Box px={5} pb={4}><Text fontSize="sm" color="ink.500">Nothing on the run yet. Add the garments, then send the quote.</Text></Box>
+              )}
+              <Box overflowX="auto" display={order.items.length ? 'block' : 'none'}>
                 <Table size="sm">
                   <Thead>
                     <Tr>
@@ -302,6 +384,7 @@ export default function OrderDetail() {
                       <Th isNumeric>Qty</Th>
                       <Th isNumeric>Unit</Th>
                       <Th isNumeric>Line</Th>
+                      <Th w="72px" />
                     </Tr>
                   </Thead>
                   <Tbody>
@@ -358,6 +441,14 @@ export default function OrderDetail() {
                         </Td>
                         <Td isNumeric>
                           <Mono fontWeight={500}>{formatMoney(it.line_total)}</Mono>
+                        </Td>
+                        <Td>
+                          {!order.quote_accepted_at && (
+                            <HStack spacing={0} justify="flex-end">
+                              <IconButton aria-label="Edit line" icon={<FiEdit2 />} size="xs" variant="ghost" onClick={() => editLine(it)} />
+                              <IconButton aria-label="Remove line" icon={<FiX />} size="xs" variant="ghost" color="ink.500" onClick={() => dropLine(it)} isLoading={saving === `line-${it.id}`} />
+                            </HStack>
+                          )}
                         </Td>
                       </Tr>
                     ))}
@@ -446,7 +537,19 @@ export default function OrderDetail() {
         <GridItem minW={0}>
           <VStack align="stretch" spacing={5}>
             {/* Customer */}
-            <Card title="Customer" action={order.customer?.id && <Link as={RouterLink} to={`/customers?open=${order.customer.id}`} fontSize="xs" color="river.600">View history</Link>}>
+            {order.request && (
+              <Card title="Came from" action={<Link as={RouterLink} to={`/quotes?open=${order.request.id}`} fontSize="xs" color="ember.600">Open the request</Link>}>
+                <Text fontSize="sm" fontWeight={600}>{order.request.event_name || (order.request.request_type === 'contact' ? 'A note from the site' : 'A run request')}</Text>
+                <Text fontSize="xs" color="ink.500" mt={0.5}>
+                  {[order.request.request_type, order.request.quantity_estimate ? `about ${order.request.quantity_estimate}` : null, order.request.needed_by || order.request.event_date ? `by ${order.request.needed_by || order.request.event_date}` : null].filter(Boolean).join(' · ')}
+                </Text>
+                {order.request.description && <Text fontSize="sm" mt={2} noOfLines={4} whiteSpace="pre-wrap">{order.request.description}</Text>}
+                {Array.isArray(order.request.artwork_files) && order.request.artwork_files.length > 0 && (
+                  <Box mt={3}><ArtworkList files={order.request.artwork_files} compact /></Box>
+                )}
+              </Card>
+            )}
+            <Card title="Customer" action={order.customer?.id && <Link as={RouterLink} to={`/customers?open=${order.customer.id}`} fontSize="xs" color="ember.600">Every run they have done</Link>}>
               <Text fontWeight={600}>{contact.name || order.customer?.name || '—'}</Text>
               {(contact.company || order.customer?.company) && (
                 <Text fontSize="sm" color="ink.500">
