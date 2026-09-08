@@ -111,6 +111,24 @@ const theme = extendTheme({
     },
   },
   components: {
+    // Toasts and inline alerts. A white card on paper with an ink type and a
+    // colored rule down the left: ember for good news, a quiet red for a
+    // problem, mustard for a warning, ink for plain information. Toasts
+    // pick this up through toastOptions in main.jsx.
+    Alert: {
+      variants: {
+        paper: (props) => {
+          const rule = { green: 'ember.500', orange: 'ember.500', red: '#C4233A', yellow: '#C39A3B', blue: 'ink.900' }[props.colorScheme] || 'ember.500'
+          return {
+            container: { bg: 'white', color: 'ink.900', border: '1px solid', borderColor: 'bone.200', borderLeft: '4px solid', borderLeftColor: rule, borderRadius: 'md', boxShadow: 'card', px: 4, py: 3, alignItems: 'flex-start' },
+            icon: { color: rule },
+            title: { fontFamily: 'heading', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: 'sm', lineHeight: 1.2 },
+            description: { fontSize: 'sm', color: 'ink.500', mt: 0.5 },
+          }
+        },
+      },
+      defaultProps: { variant: 'paper' },
+    },
     Heading: {
       baseStyle: {
         fontFamily: 'heading',
