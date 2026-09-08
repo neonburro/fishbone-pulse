@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import {
   Box,
   Button,
@@ -12,9 +11,6 @@ import {
   SimpleGrid,
   Skeleton,
   Switch,
-  Tab,
-  TabList,
-  Tabs,
   Tag,
   Text,
   Tooltip,
@@ -32,7 +28,7 @@ import ErrorState from '../../components/common/ErrorState'
 import MotionFade from '../../components/common/MotionFade'
 import Mono from '../../components/common/Mono'
 import TagsInput from '../../components/common/TagsInput'
-import { createShowcaseItem, deleteShowcaseItem, listShowcase, PLACEMENTS, reorderShowcase, updateShowcaseItem } from '../../lib/api/showcase'
+import { createShowcaseItem, deleteShowcaseItem, listShowcase, reorderShowcase, updateShowcaseItem } from '../../lib/api/showcase'
 import { uploadShowcaseImage } from '../../lib/api/storage'
 
 const ACCENTS = ['#FF6A13', '#2BB3A3', '#C6F135', '#F2EDE4', '#0B0B0C', '#8B1E2D', '#4F5A3C']
@@ -116,6 +112,9 @@ function ShowcaseTile({ item, index, total, onPatch, onMove, onDelete, dragging,
             <Input type="color" size="xs" w="22px" h="18px" p={0} border="none" value={item.accent_hex || '#FF6A13'} onChange={(e) => onPatch(item.id, { accent_hex: e.target.value })} aria-label="Custom accent" />
           </HStack>
           <HStack spacing={1}>
+            <Tooltip label={item.placement === 'home' ? 'On the home page too' : 'Work page only'} fontSize="xs">
+              <HStack spacing={1}><Text fontFamily="mono" fontSize="10px" color="ink.500">Home</Text><Switch size="sm" colorScheme="orange" isChecked={item.placement === 'home'} onChange={(e) => onPatch(item.id, { placement: e.target.checked ? 'home' : 'work' })} aria-label="Show on the home page" /></HStack>
+            </Tooltip>
             <Tooltip label={item.is_active ? 'Showing on the site' : 'Hidden'} fontSize="xs">
               <Box>
                 <Switch size="sm" isChecked={item.is_active} onChange={(e) => onPatch(item.id, { is_active: e.target.checked })} aria-label="Toggle visible" />
@@ -131,8 +130,6 @@ function ShowcaseTile({ item, index, total, onPatch, onMove, onDelete, dragging,
 }
 
 export default function Showcase() {
-  const [params, setParams] = useSearchParams()
-  const placement = params.get('placement') || 'home'
   const toast = useToast()
   const del = useDisclosure()
   const inputRef = useRef()
@@ -148,11 +145,11 @@ export default function Showcase() {
   const load = useCallback(async () => {
     setError('')
     try {
-      setItems(await listShowcase(placement))
+      setItems(await listShowcase())
     } catch (err) {
       setError(err.message)
     }
-  }, [placement])
+  }, [])
 
   useEffect(() => {
     setItems(null)
@@ -209,9 +206,9 @@ export default function Showcase() {
     const created = []
     for (const file of files) {
       try {
-        const { path, url, width, height } = await uploadShowcaseImage(file, placement)
+        const { path, url, width, height } = await uploadShowcaseImage(file, 'wall')
         const item = await createShowcaseItem({
-          placement,
+          placement: 'home',
           image_path: path,
           image_url: url,
           width,
@@ -250,32 +247,11 @@ export default function Showcase() {
     }
   }
 
-  const tabIndex = Math.max(0, PLACEMENTS.findIndex((p) => p.key === placement))
-  const current = PLACEMENTS[tabIndex]
 
   return (
     <MotionFade>
-      <PageHeader eyebrow="Storefront" title="The wall" description="The graphics wall, work gallery and hero images customers see. Drop photos in, caption them, drag to reorder." />
+      <PageHeader eyebrow="Storefront" title="The wall" description="One wall. Every photo shows on the Work page. Flip Home on the ones for the front page, they go first. Drop photos in, caption them, drag to reorder." />
 
-      <Tabs
-        index={tabIndex}
-        onChange={(i) => {
-          const next = new URLSearchParams(params)
-          if (PLACEMENTS[i].key === 'home') next.delete('placement')
-          else next.set('placement', PLACEMENTS[i].key)
-          setParams(next, { replace: true })
-        }}
-        size="sm"
-        mb={4}
-      >
-        <TabList>
-          {PLACEMENTS.map((p) => (
-            <Tab key={p.key} fontSize="xs" px={3}>
-              {p.label}
-            </Tab>
-          ))}
-        </TabList>
-      </Tabs>
 
       {/* Dropzone */}
       <Box
@@ -308,9 +284,9 @@ export default function Showcase() {
           </Box>
         ) : (
           <>
-            <Text fontWeight={600}>Drop photos here to add them to the {current.label.toLowerCase()}</Text>
+            <Text fontWeight={600}>Drop photos here to add them to the wall</Text>
             <Text fontSize="sm" color="ink.500" mt={1}>
-              {current.help} Multiple files become multiple tiles. We read the dimensions so the storefront can lay them out without jumping.
+              New photos go on the home page and the work page. Multiple files become multiple tiles. We read the dimensions so the storefront can lay them out without jumping.
             </Text>
             <Button mt={3} size="sm" leftIcon={<FiUpload />} onClick={() => inputRef.current?.click()}>
               Choose images
@@ -329,7 +305,7 @@ export default function Showcase() {
         </SimpleGrid>
       ) : items.length === 0 ? (
         <Card p={0}>
-          <EmptyState title={`Nothing in the ${current.label.toLowerCase()} yet`} description="Drop a few finished pieces above. The first tile is the first thing customers see." />
+          <EmptyState title="Nothing on the wall yet" description="Drop a few finished pieces above. The first tile is the first thing customers see." />
         </Card>
       ) : (
         <>
@@ -380,7 +356,7 @@ export default function Showcase() {
         onConfirm={confirmDelete}
         isLoading={deleting}
         title="Remove this image?"
-        body={`“${pendingDelete?.title || pendingDelete?.client_name || 'This image'}” comes off the ${current.label.toLowerCase()} and the file is deleted from storage.`}
+        body={`“${pendingDelete?.title || pendingDelete?.client_name || 'This image'}” comes off the wall, home page and work page both, and the file is deleted from storage.`}
         confirmLabel="Remove"
       />
     </MotionFade>

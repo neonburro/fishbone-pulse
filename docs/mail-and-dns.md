@@ -77,7 +77,10 @@ The switch is small once DNS access exists.
 3. Set SITE_URL and PULSE_URL to the real hostnames once the custom
    domains are on Netlify. Also VITE_SITE_URL on the storefront, and the
    absolute URLs in both index.html files (canonical, og:url, og:image),
-   which link previews read straight from the static file.
+   which link previews read straight from the static file. The seeded wall
+   rows in showcase_items point at https://fishbonegraphics.netlify.app/work/,
+   one update statement moves them, or the shop replaces them with its own
+   uploads and the question goes away.
 4. Redeploy both sites. Send one contact form and one quote as a test to
    fishbonegraphics@neonburro.com and confirm both emails on each.
 5. Remove fishbone.neonburro.com from Resend and its records from

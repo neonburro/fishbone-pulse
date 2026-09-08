@@ -2,10 +2,11 @@ import { supabase, unwrap } from '../supabase'
 import { logActivity } from '../../utils/activityLogger'
 import { removeShowcaseImage } from './storage'
 
+// One wall. Every photo shows on /work/. placement 'home' means it shows on
+// the home page too, first in line. 'work' means the gallery only.
 export const PLACEMENTS = [
-  { key: 'home', label: 'Home wall', help: 'The graphics wall on the storefront home page.' },
-  { key: 'work', label: 'Work gallery', help: 'The /work gallery grid.' },
-  { key: 'hero', label: 'Hero', help: 'Large hero images rotated at the top of the home page.' },
+  { key: 'home', label: 'Home and work', help: 'On the home page wall and in the work gallery.' },
+  { key: 'work', label: 'Work only', help: 'The work gallery only.' },
 ]
 
 const COLS = 'id, placement, title, subtitle, client_name, year, image_path, image_url, alt, link_url, tags, accent_hex, width, height, sort_order, is_active, created_at'

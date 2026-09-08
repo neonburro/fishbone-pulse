@@ -62,9 +62,10 @@ export default function Settings() {
     <MotionFade>
       <PageHeader eyebrow="Shop" title="Settings" description="Store details, pricing, storefront options, your team and your account." />
       <Tabs index={tabIndex} onChange={setTab} isLazy>
-        <TabList mb={5} overflowX="auto">
+        {/* The strip. Wraps on a desktop, scrolls on a phone with the bar hidden. */}
+        <TabList mb={5} flexWrap={{ base: 'nowrap', md: 'wrap' }} overflowX={{ base: 'auto', md: 'visible' }} overflowY="hidden" sx={{ scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' } }} gap={{ md: 1 }}>
           {TABS.map((t) => (
-            <Tab key={t.key} fontSize="xs" px={3}>
+            <Tab key={t.key} fontSize={{ base: 'xs', md: 'sm' }} px={{ base: 3, md: 4 }} py={{ md: 3 }} flexShrink={0}>
               {t.label}
             </Tab>
           ))}
