@@ -175,3 +175,6 @@ One events table, two audiences.
   frame, paper room, white cards. Supabase login mail on the same sheet
   through Resend. Owner fishbonegraphics@neonburro.com, Tyler is admin.
   Briefs for the shop in the storefront repo, docs/brief.
+- 2026-09-09: storefront dark mode renamed Scale, a fish scale grey
+  (#2B2E33) in place of near black. Token names unchanged. Backstage keeps
+  the ink frame.
